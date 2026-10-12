@@ -1601,6 +1601,70 @@ body.firebase-admin-mode.public-dark::before{
   }
 }
 
+
+/* ===== v9.4 • CORREÇÃO DE MENUS/MODAIS COM MARCA D'ÁGUA ===== */
+
+/*
+A marca d'água da v9.3 aplicava position:relative em todos os filhos diretos
+do body no modo admin. Isso sobrescrevia position:fixed dos overlays.
+Aqui restauramos explicitamente as camadas flutuantes.
+*/
+
+body.firebase-admin-mode #minimal-menu-overlay{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:12000 !important;
+}
+
+body.firebase-admin-mode #minimal-menu-overlay.open{
+  display:block !important;
+}
+
+body.firebase-admin-mode .minimal-drawer{
+  position:absolute !important;
+  top:0 !important;
+  right:0 !important;
+  height:100% !important;
+  z-index:12001 !important;
+}
+
+/* Restaura também as demais janelas do sistema */
+body.firebase-admin-mode .modal-overlay,
+body.firebase-admin-mode #summary-modal,
+body.firebase-admin-mode #firebase-admin-gate,
+body.firebase-admin-mode #public-qr-modal{
+  position:fixed !important;
+  inset:0 !important;
+}
+
+/* Z-index das janelas administrativas */
+body.firebase-admin-mode .modal-overlay,
+body.firebase-admin-mode #summary-modal{
+  z-index:12500 !important;
+}
+
+body.firebase-admin-mode #firebase-admin-gate{
+  z-index:20000 !important;
+}
+
+body.firebase-admin-mode #public-qr-modal{
+  z-index:300000 !important;
+}
+
+/* A marca d'água nunca intercepta clique */
+body.firebase-admin-mode::before,
+#public-cloud-view::before{
+  pointer-events:none !important;
+}
+
+/* Garante que o botão Menu continue clicável */
+body.firebase-admin-mode #btn-min-menu,
+body.firebase-admin-authenticated #firebase-admin-menu-btn{
+  position:relative !important;
+  z-index:13000 !important;
+  pointer-events:auto !important;
+}
+
 </style>
 </head>
 <body>
@@ -3232,12 +3296,13 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     document.getElementById('firebase-load-btn')?.addEventListener('click',()=>loadCloud(true));
     document.getElementById('firebase-admin-menu-btn')?.addEventListener('click',()=>{
       ensureAdminControls();
-      if(typeof openMinimalMenu==='function'){
+      const menu=document.getElementById('btn-min-menu');
+      if(menu){
+        menu.click();
+      }else if(typeof openMinimalMenu==='function'){
         openMinimalMenu();
       }else{
-        const menu=document.getElementById('btn-min-menu');
-        if(menu) menu.click();
-        else alert('O menu administrativo não foi encontrado. Recarregue esta página usando ?admin=1.');
+        alert('O menu administrativo não foi encontrado. Recarregue esta página usando ?admin=1.');
       }
     });
     document.getElementById('firebase-logout-btn')?.addEventListener('click',async()=>{
