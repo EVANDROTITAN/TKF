@@ -3720,5 +3720,116 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
 })();
 </script>
 
+
+<script>
+/* ===== v9.5 • ABERTURA DE MENU ADMIN INDEPENDENTE ===== */
+(function(){
+  function isAdmin(){
+    try{return new URLSearchParams(location.search).get('admin')==='1'}catch(e){return false}
+  }
+
+  function safeSetValue(targetId, sourceId){
+    const t=document.getElementById(targetId);
+    const s=document.getElementById(sourceId);
+    if(t && s) t.value=s.value;
+  }
+
+  function safeSetChecked(targetId, sourceId, mode){
+    const t=document.getElementById(targetId);
+    const s=document.getElementById(sourceId);
+    if(!t || !s) return;
+    if(mode==='checked') t.checked=!!s.checked;
+    else t.checked=s.getAttribute('aria-pressed')==='true';
+  }
+
+  function forceOpenAdminMenu(ev){
+    if(!isAdmin()) return;
+    if(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation?.();
+    }
+
+    const ov=document.getElementById('minimal-menu-overlay');
+    if(!ov){
+      alert('Não encontrei o painel de menu nesta versão.');
+      return;
+    }
+
+    // Sincroniza os campos sem deixar um item inexistente interromper a abertura.
+    try{safeSetValue('menu-num-peixes','num-peixes')}catch(e){}
+    try{safeSetValue('menu-limite','limite')}catch(e){}
+    try{safeSetValue('menu-tiebreak','tie-break')}catch(e){}
+    try{safeSetChecked('menu-dark','dark-toggle','checked')}catch(e){}
+    try{safeSetChecked('menu-progress','btn-toggle-progress','aria')}catch(e){}
+    try{safeSetChecked('menu-giant','btn-giant','aria')}catch(e){}
+    try{safeSetChecked('menu-lock','btn-lock','aria')}catch(e){}
+
+    ov.classList.add('open');
+    ov.setAttribute('aria-hidden','false');
+    ov.style.setProperty('display','block','important');
+    ov.style.setProperty('visibility','visible','important');
+    ov.style.setProperty('opacity','1','important');
+    ov.style.setProperty('pointer-events','auto','important');
+    ov.style.setProperty('position','fixed','important');
+    ov.style.setProperty('inset','0','important');
+    ov.style.setProperty('z-index','999999','important');
+
+    const drawer=ov.querySelector('.minimal-drawer');
+    if(drawer){
+      drawer.style.setProperty('display','block','important');
+      drawer.style.setProperty('visibility','visible','important');
+      drawer.style.setProperty('opacity','1','important');
+      drawer.style.setProperty('pointer-events','auto','important');
+      drawer.style.setProperty('position','absolute','important');
+      drawer.style.setProperty('right','0','important');
+      drawer.style.setProperty('top','0','important');
+      drawer.style.setProperty('height','100%','important');
+      drawer.style.setProperty('z-index','1000000','important');
+    }
+  }
+
+  function forceCloseAdminMenu(ev){
+    if(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
+    const ov=document.getElementById('minimal-menu-overlay');
+    if(!ov) return;
+    ov.classList.remove('open');
+    ov.setAttribute('aria-hidden','true');
+    ov.style.removeProperty('display');
+    ov.style.removeProperty('visibility');
+    ov.style.removeProperty('opacity');
+    ov.style.removeProperty('pointer-events');
+    ov.style.removeProperty('z-index');
+  }
+
+  function bind(){
+    if(!isAdmin()) return;
+
+    const top=document.getElementById('btn-min-menu');
+    const bottom=document.getElementById('firebase-admin-menu-btn');
+    const close=document.getElementById('btn-close-min-menu');
+    const ov=document.getElementById('minimal-menu-overlay');
+
+    // Capture=true: este listener roda antes dos listeners antigos.
+    top?.addEventListener('click',forceOpenAdminMenu,true);
+    bottom?.addEventListener('click',forceOpenAdminMenu,true);
+    close?.addEventListener('click',forceCloseAdminMenu,true);
+
+    ov?.addEventListener('click',function(e){
+      if(e.target===ov) forceCloseAdminMenu(e);
+    },true);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bind);
+  }else{
+    bind();
+  }
+})();
+</script>
+
 </body>
 </html>
