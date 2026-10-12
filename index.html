@@ -1041,7 +1041,7 @@ body.public-standalone #public-cloud-view{display:block}
 .public-cloud-live-dot{width:9px;height:9px;border-radius:50%;background:#22bf7b;box-shadow:0 0 0 4px rgba(34,191,123,.12)}
 .public-cloud-title{
   background:#fff7ef;border:1px solid #f0e6dc;border-radius:14px;
-  padding:14px 16px;font-size:1.55rem;font-weight:950;color:#0a5964;margin-bottom:12px
+  padding:16px 20px;font-size:1.55rem;font-weight:950;color:#0a5964;margin-bottom:12px
 }
 .public-cloud-metrics{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .public-cloud-pill{background:#fff;border:1px solid #d9e4e4;border-radius:999px;padding:7px 10px;font-size:.76rem;font-weight:850}
@@ -1710,21 +1710,28 @@ body.public-dark .tournament-status-badge.finished{
 
 /* público */
 .public-title-brand{
-  display:flex;align-items:center;gap:12px;
+  display:flex;align-items:center;justify-content:center;gap:16px;width:100%;
 }
 .public-title-logo{
-  width:62px;height:62px;object-fit:contain;flex:0 0 auto;
+  width:88px;height:88px;object-fit:contain;flex:0 0 auto;
+  filter:drop-shadow(0 6px 16px rgba(0,0,0,.10));
 }
-.public-title-copy{min-width:0}
-.public-title-text{font:inherit;color:inherit}
+.public-title-copy{
+  min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;flex:0 1 auto;
+}
+.public-title-text{
+  font:inherit;color:inherit;text-align:center;display:block;width:100%;
+}
 .public-title-meta{
-  display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;
+  display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:7px;
   font-size:.68rem;font-weight:800;color:#6c8082;
 }
 .public-title-meta span{
-  display:inline-flex;align-items:center;gap:4px;
+  display:inline-flex;align-items:center;gap:4px;justify-content:center;
 }
 body.public-dark .public-title-meta{color:#a9c3c5}
+body.public-telao .public-title-logo{width:112px;height:112px}
 .public-official-banner{
   display:none;margin:0 0 12px;padding:11px 14px;border-radius:14px;
   background:linear-gradient(135deg,#fff1bd,#fff8df);
@@ -1775,11 +1782,143 @@ body[data-theme="dark"] .status-choice.active[data-status="finalizado"]{backgrou
 
 @media(max-width:700px){
   .tkf-header-logo{width:44px;height:44px}
-  .public-title-logo{width:52px;height:52px}
-  .public-cloud-title{padding:12px}
-  .public-title-brand{gap:9px}
+  .public-title-logo{width:68px;height:68px}
+  .public-cloud-title{padding:14px}
+  .public-title-brand{gap:10px;flex-direction:column}
+  .public-title-copy{width:100%}
+  .public-title-text{text-align:center}
   .public-title-meta{font-size:.61rem}
   .status-radio-grid{grid-template-columns:1fr}
+}
+
+
+/* ===== v10.2 • CABEÇALHO PREMIUM ===== */
+.public-cloud-title{
+  position:relative;
+  overflow:hidden;
+  padding:22px 24px !important;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(244,163,64,.12), transparent 32%),
+    linear-gradient(135deg,#fff8ef 0%,#ffffff 60%,#f5fbfb 100%);
+  border:1px solid #e8ded4;
+  box-shadow:0 10px 30px rgba(10,48,53,.08);
+}
+.public-cloud-title::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:0;height:4px;
+  background:linear-gradient(90deg,#d59b2f,#0b6f79,#d59b2f);
+  opacity:.8;
+}
+.public-title-brand{
+  display:grid !important;
+  grid-template-columns:132px minmax(0,1fr) 132px;
+  align-items:center;
+  width:100%;
+  gap:18px !important;
+}
+.public-title-logo{
+  width:118px !important;
+  height:118px !important;
+  justify-self:center;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.14));
+}
+.public-title-copy{
+  width:100%;
+  align-items:center !important;
+  justify-content:center;
+  text-align:center;
+}
+.public-title-text{
+  width:100%;
+  text-align:center !important;
+  font-size:1.22em;
+  line-height:1.08;
+  letter-spacing:.015em;
+  text-wrap:balance;
+}
+.public-title-meta{
+  justify-content:center !important;
+  gap:8px !important;
+  margin-top:12px !important;
+}
+.public-title-meta span{
+  padding:6px 9px;
+  border:1px solid #dbe6e5;
+  background:rgba(255,255,255,.78);
+  border-radius:999px;
+  box-shadow:0 2px 8px rgba(9,64,71,.05);
+}
+#public-status-meta{
+  font-weight:950;
+  border-color:#c8ded9;
+}
+.public-header-spacer{
+  width:118px;height:1px;justify-self:center;
+}
+body.public-dark .public-cloud-title{
+  background:
+    radial-gradient(circle at 12% 18%, rgba(222,160,48,.10), transparent 34%),
+    linear-gradient(135deg,#133136 0%,#0d262a 62%,#102d31 100%);
+  border-color:#244b51;
+  box-shadow:0 12px 34px rgba(0,0,0,.26);
+}
+body.public-dark .public-title-meta span{
+  background:rgba(15,49,54,.82);
+  border-color:#2d565c;
+}
+body.public-telao .public-title-logo{width:148px !important;height:148px !important}
+body.public-telao .public-title-brand{grid-template-columns:160px minmax(0,1fr) 160px}
+
+/* Admin: mesma identidade visual, porém compacta */
+.tkf-title-row{
+  justify-content:center;
+  text-align:center;
+  gap:16px !important;
+}
+.tkf-header-logo{
+  width:78px !important;
+  height:78px !important;
+}
+.tkf-header-copy{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.tournament-title{
+  text-align:center;
+}
+.tournament-meta-line{
+  justify-content:center;
+}
+
+@media(max-width:700px){
+  .public-cloud-title{padding:18px 14px !important}
+  .public-title-brand{
+    display:flex !important;
+    flex-direction:column;
+    gap:8px !important;
+  }
+  .public-title-logo{
+    width:92px !important;
+    height:92px !important;
+  }
+  .public-title-text{
+    font-size:1.08em;
+    line-height:1.12;
+  }
+  .public-title-meta{
+    gap:5px !important;
+    margin-top:9px !important;
+  }
+  .public-title-meta span{
+    padding:5px 7px;
+    font-size:.58rem;
+  }
+  .public-header-spacer{display:none}
+  .tkf-title-row{flex-direction:column}
+  .tkf-header-logo{width:64px !important;height:64px !important}
 }
 
 </style>
@@ -3521,6 +3660,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
             <span id="public-location-meta">📍 Local não definido</span>
           </div>
         </div>
+        <div class="public-header-spacer" aria-hidden="true"></div>
       </div>
     </div>
 
