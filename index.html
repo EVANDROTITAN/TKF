@@ -2331,6 +2331,39 @@ body.tkf-qr-open::before{
 }
 </style>
 
+
+<style id="tkf-v123-unified-ticker-final">
+/* ===== v12.3 • MOTOR ÚNICO DO TICKER ===== */
+.tkf-news-window{
+  overflow:hidden !important;
+  min-width:0 !important;
+  flex:1 1 auto !important;
+  position:relative !important;
+}
+.tkf-news-track{
+  animation:none !important;
+  transform:none !important;
+  padding-left:0 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  will-change:auto !important;
+}
+.tkf-news-sequence{
+  display:inline-flex !important;
+  align-items:center !important;
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+.tkf-news-label{
+  flex:0 0 auto !important;
+  position:relative !important;
+  z-index:5 !important;
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -5117,7 +5150,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'12.2',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'12.3',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -5344,120 +5377,129 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
 </script>
 
 
+
+
+
+
 <script>
-/* ===== v12.1 • LOOP NATIVO CONTÍNUO DO TICKER NO DESKTOP ===== */
+/* ===== v12.3 • SCROLLER ÚNICO PC + MOBILE ===== */
 (function(){
   let rafId=null;
   let lastTs=0;
   let carry=0;
-  let sequenceWidth=0;
-  let resizeTimer=null;
+  let observer=null;
+  let restartTimer=null;
 
   function stop(){
-    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+    if(rafId){
+      cancelAnimationFrame(rafId);
+      rafId=null;
+    }
+    lastTs=0;
+    carry=0;
   }
 
-  function desktop(){ return window.matchMedia('(min-width: 701px)').matches; }
+  function speed(){
+    return window.matchMedia('(max-width:700px)').matches ? 54 : 70;
+  }
 
-  function buildDesktopCopies(){
-    if(!desktop()) return false;
-    const win=document.querySelector('.tkf-news-window');
+  function ensureCopies(){
     const track=document.getElementById('tkf-news-track');
-    if(!win||!track) return false;
+    if(!track) return null;
 
-    // Se já existem sequências e o conteúdo não mudou, não reconstrói.
-    if(track.querySelector('.tkf-native-sequence') && track.dataset.tkfNeedsLoopBuild!=='1'){
-      const first=track.querySelector('.tkf-native-sequence');
-      sequenceWidth=first ? Math.ceil(first.getBoundingClientRect().width) : 0;
-      return sequenceWidth>0;
-    }
+    let seqs=track.querySelectorAll(':scope > .tkf-news-sequence');
+    if(seqs.length===3) return seqs[0];
 
-    const source=track.innerHTML;
-    if(!source) return false;
+    const source=track.innerHTML.trim();
+    if(!source) return null;
 
-    const sep='<span class="tkf-news-dot">◆</span>';
-    // 3 cópias garantem largura suficiente mesmo em monitores largos.
-    track.innerHTML =
-      `<span class="tkf-native-sequence">${source}${sep}</span>`+
-      `<span class="tkf-native-sequence" aria-hidden="true">${source}${sep}</span>`+
-      `<span class="tkf-native-sequence" aria-hidden="true">${source}${sep}</span>`;
+    track.innerHTML=
+      `<span class="tkf-news-sequence">${source}</span>`+
+      `<span class="tkf-news-sequence" aria-hidden="true">${source}</span>`+
+      `<span class="tkf-news-sequence" aria-hidden="true">${source}</span>`;
 
-    track.dataset.tkfNeedsLoopBuild='0';
-    const first=track.querySelector('.tkf-native-sequence');
-    sequenceWidth=first ? Math.ceil(first.getBoundingClientRect().width) : 0;
-    win.scrollLeft=0;
-    return sequenceWidth>0;
+    return track.querySelector('.tkf-news-sequence');
   }
 
   function start(){
     stop();
-    if(!desktop()) return;
+
     const win=document.querySelector('.tkf-news-window');
-    if(!win) return;
-    if(!buildDesktopCopies()) return;
+    const track=document.getElementById('tkf-news-track');
+    if(!win || !track) return;
 
-    lastTs=0;
-    carry=0;
+    track.style.setProperty('animation','none','important');
+    track.style.setProperty('transform','none','important');
+    track.style.setProperty('padding-left','0','important');
 
-    const frame=(ts)=>{
+    const first=ensureCopies();
+    if(!first) return;
+
+    win.scrollLeft=0;
+
+    const tick=(ts)=>{
       if(!lastTs) lastTs=ts;
       const dt=Math.min(50,ts-lastTs);
       lastTs=ts;
 
-      carry += dt*0.070; // ~32 px/s
-      const move=Math.floor(carry);
-      if(move>0){
-        carry-=move;
-        win.scrollLeft += move;
-        if(sequenceWidth>0 && win.scrollLeft>=sequenceWidth){
-          // Subtrai exatamente UMA sequência, preservando a posição visual.
-          win.scrollLeft -= sequenceWidth;
+      const seq=track.querySelector('.tkf-news-sequence');
+      const seqWidth=seq ? Math.round(seq.getBoundingClientRect().width) : 0;
+
+      if(seqWidth>0){
+        carry += (dt*speed())/1000;
+        const px=Math.floor(carry);
+        if(px>0){
+          carry-=px;
+          win.scrollLeft += px;
+
+          if(win.scrollLeft>=seqWidth){
+            win.scrollLeft -= seqWidth;
+          }
         }
       }
-      rafId=requestAnimationFrame(frame);
+
+      rafId=requestAnimationFrame(tick);
     };
-    rafId=requestAnimationFrame(frame);
+
+    rafId=requestAnimationFrame(tick);
   }
 
-  function rebuildAndStart(){
+  function scheduleRestart(){
+    clearTimeout(restartTimer);
+    restartTimer=setTimeout(start,120);
+  }
+
+  function watch(){
     const track=document.getElementById('tkf-news-track');
-    if(track) track.dataset.tkfNeedsLoopBuild='1';
-    requestAnimationFrame(()=>requestAnimationFrame(start));
+    if(!track) return;
+
+    if(observer) observer.disconnect();
+    observer=new MutationObserver((mutations)=>{
+      const externalChange=mutations.some(m=>{
+        return ![...m.addedNodes].every(n=>
+          n.nodeType===1 && n.classList && n.classList.contains('tkf-news-sequence')
+        );
+      });
+      if(externalChange) scheduleRestart();
+    });
+    observer.observe(track,{childList:true,subtree:false,characterData:false});
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
-  else start();
+  function boot(){
+    watch();
+    setTimeout(start,180);
+  }
 
-  // Só reinicia quando o conteúdo REAL mudou.
-  window.addEventListener('tkf-ticker-content-changed',rebuildAndStart);
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',boot);
+  }else{
+    boot();
+  }
 
-  window.addEventListener('resize',()=>{
-    clearTimeout(resizeTimer);
-    resizeTimer=setTimeout(rebuildAndStart,180);
-  });
+  window.addEventListener('resize',scheduleRestart);
+  window.addEventListener('orientationchange',scheduleRestart);
 })();
 </script>
 
-<script>
-/* ===== v12.1 • DUPLICAÇÃO DO TICKER NO MOBILE ===== */
-(function(){
-  function prepMobile(){
-    if(window.matchMedia('(min-width: 701px)').matches) return;
-    const track=document.getElementById('tkf-news-track');
-    if(!track||track.dataset.tkfMobilePrepared==='1') return;
-    const src=track.innerHTML;
-    if(!src) return;
-    const sep='<span class="tkf-news-dot">◆</span>';
-    track.innerHTML=src+sep+src;
-    track.dataset.tkfMobilePrepared='1';
-  }
-  window.addEventListener('tkf-ticker-content-changed',()=>{
-    const t=document.getElementById('tkf-news-track'); if(t) t.dataset.tkfMobilePrepared='0';
-    setTimeout(prepMobile,20);
-  });
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(prepMobile,50));
-  else setTimeout(prepMobile,50);
-})();
-</script>
 </body>
 </html>
