@@ -2309,6 +2309,28 @@ body.tkf-qr-open::before{
 }
 </style>
 
+
+<style id="tkf-v121-loop-real">
+/* ===== v12.1 • LOOP CONTÍNUO REAL NO DESKTOP ===== */
+@media(min-width:701px){
+  .tkf-news-track{
+    display:inline-flex !important;
+    width:max-content !important;
+    min-width:max-content !important;
+    white-space:nowrap !important;
+    padding-left:0 !important;
+    animation:none !important;
+    transform:none !important;
+  }
+  .tkf-native-sequence{
+    display:inline-flex !important;
+    flex:0 0 auto !important;
+    align-items:center !important;
+    white-space:nowrap !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -5095,7 +5117,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'12.0',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'12.1',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -5280,11 +5302,12 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     }
 
     const items=parts.join('<span class="tkf-news-dot">◆</span>');
-    const full=items + '<span class="tkf-news-dot">◆</span>' + items;
-    // Só reconstrói a faixa se o conteúdo mudou; assim a animação não reinicia a cada atualização.
-    if(track.dataset.tkfSignature!==full){
-      track.dataset.tkfSignature=full;
-      track.innerHTML=full;
+    // A assinatura usa apenas uma sequência. O desktop cria clones próprios para o loop contínuo.
+    if(track.dataset.tkfSignature!==items){
+      track.dataset.tkfSignature=items;
+      track.innerHTML=items;
+      track.dataset.tkfNeedsLoopBuild='1';
+      window.dispatchEvent(new CustomEvent('tkf-ticker-content-changed'));
     }
   };
 
@@ -5322,84 +5345,119 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
 
 
 <script>
-/* ===== v11.8 • ROLAGEM NATIVA DO TICKER NO DESKTOP ===== */
+/* ===== v12.1 • LOOP NATIVO CONTÍNUO DO TICKER NO DESKTOP ===== */
 (function(){
   let rafId=null;
-  let last=0;
+  let lastTs=0;
   let carry=0;
+  let sequenceWidth=0;
+  let resizeTimer=null;
 
-  function stopDesktopTicker(){
-    if(rafId){
-      cancelAnimationFrame(rafId);
-      rafId=null;
-    }
+  function stop(){
+    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
   }
 
-  function startDesktopTicker(){
-    stopDesktopTicker();
+  function desktop(){ return window.matchMedia('(min-width: 701px)').matches; }
 
-    if(!window.matchMedia('(min-width: 701px)').matches) return;
-
+  function buildDesktopCopies(){
+    if(!desktop()) return false;
     const win=document.querySelector('.tkf-news-window');
     const track=document.getElementById('tkf-news-track');
-    if(!win || !track) return;
+    if(!win||!track) return false;
 
-    // Usa rolagem nativa; ao reiniciar por mudança real de conteúdo, volta ao início.
+    // Se já existem sequências e o conteúdo não mudou, não reconstrói.
+    if(track.querySelector('.tkf-native-sequence') && track.dataset.tkfNeedsLoopBuild!=='1'){
+      const first=track.querySelector('.tkf-native-sequence');
+      sequenceWidth=first ? Math.ceil(first.getBoundingClientRect().width) : 0;
+      return sequenceWidth>0;
+    }
+
+    const source=track.innerHTML;
+    if(!source) return false;
+
+    const sep='<span class="tkf-news-dot">◆</span>';
+    // 3 cópias garantem largura suficiente mesmo em monitores largos.
+    track.innerHTML =
+      `<span class="tkf-native-sequence">${source}${sep}</span>`+
+      `<span class="tkf-native-sequence" aria-hidden="true">${source}${sep}</span>`+
+      `<span class="tkf-native-sequence" aria-hidden="true">${source}${sep}</span>`;
+
+    track.dataset.tkfNeedsLoopBuild='0';
+    const first=track.querySelector('.tkf-native-sequence');
+    sequenceWidth=first ? Math.ceil(first.getBoundingClientRect().width) : 0;
     win.scrollLeft=0;
-    track.style.animation='none';
-    track.style.transform='none';
+    return sequenceWidth>0;
+  }
 
-    const step=(ts)=>{
-      if(!last) last=ts;
-      const dt=Math.min(50,ts-last);
-      last=ts;
+  function start(){
+    stop();
+    if(!desktop()) return;
+    const win=document.querySelector('.tkf-news-window');
+    if(!win) return;
+    if(!buildDesktopCopies()) return;
 
-      // Aproximadamente 34 px/segundo, sempre acumulando em pixels inteiros.
-      carry += dt * 0.034;
-      const px = Math.floor(carry);
-      if(px > 0){
-        carry -= px;
-        win.scrollLeft += px;
+    lastTs=0;
+    carry=0;
 
-        const half = track.scrollWidth / 2;
-        if(half > 0 && win.scrollLeft >= half){
-          win.scrollLeft -= half;
+    const frame=(ts)=>{
+      if(!lastTs) lastTs=ts;
+      const dt=Math.min(50,ts-lastTs);
+      lastTs=ts;
+
+      carry += dt*0.032; // ~32 px/s
+      const move=Math.floor(carry);
+      if(move>0){
+        carry-=move;
+        win.scrollLeft += move;
+        if(sequenceWidth>0 && win.scrollLeft>=sequenceWidth){
+          // Subtrai exatamente UMA sequência, preservando a posição visual.
+          win.scrollLeft -= sequenceWidth;
         }
       }
-      rafId=requestAnimationFrame(step);
+      rafId=requestAnimationFrame(frame);
     };
-
-    rafId=requestAnimationFrame(step);
+    rafId=requestAnimationFrame(frame);
   }
 
-  function restart(){
-    last=0;
-    carry=0;
-    setTimeout(startDesktopTicker,120);
-  }
-
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',restart);
-  }else{
-    restart();
-  }
-
-  window.addEventListener('resize',restart);
-  window.addEventListener('orientationchange',restart);
-
-  // Reinicia quando o conteúdo do ticker muda.
-  const observer=new MutationObserver(()=>restart());
-  const attach=()=>{
+  function rebuildAndStart(){
     const track=document.getElementById('tkf-news-track');
-    if(track) observer.observe(track,{childList:true,subtree:true,characterData:true});
-  };
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',attach);
-  }else{
-    attach();
+    if(track) track.dataset.tkfNeedsLoopBuild='1';
+    requestAnimationFrame(()=>requestAnimationFrame(start));
   }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
+
+  // Só reinicia quando o conteúdo REAL mudou.
+  window.addEventListener('tkf-ticker-content-changed',rebuildAndStart);
+
+  window.addEventListener('resize',()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(rebuildAndStart,180);
+  });
 })();
 </script>
 
+<script>
+/* ===== v12.1 • DUPLICAÇÃO DO TICKER NO MOBILE ===== */
+(function(){
+  function prepMobile(){
+    if(window.matchMedia('(min-width: 701px)').matches) return;
+    const track=document.getElementById('tkf-news-track');
+    if(!track||track.dataset.tkfMobilePrepared==='1') return;
+    const src=track.innerHTML;
+    if(!src) return;
+    const sep='<span class="tkf-news-dot">◆</span>';
+    track.innerHTML=src+sep+src;
+    track.dataset.tkfMobilePrepared='1';
+  }
+  window.addEventListener('tkf-ticker-content-changed',()=>{
+    const t=document.getElementById('tkf-news-track'); if(t) t.dataset.tkfMobilePrepared='0';
+    setTimeout(prepMobile,20);
+  });
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(prepMobile,50));
+  else setTimeout(prepMobile,50);
+})();
+</script>
 </body>
 </html>
