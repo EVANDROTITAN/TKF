@@ -2222,6 +2222,93 @@ body.tkf-qr-open{
 }
 </style>
 
+
+<style id="tkf-v120-qr-and-ticker-fix">
+/* ===== v12.0 • QR COMPACTO + TICKER SEM REINÍCIO ===== */
+#public-qr-modal.open{
+  background:#062d31 !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+#public-qr-modal.open .public-qr-card{
+  width:min(92vw,380px) !important;
+  max-height:calc(100dvh - 32px) !important;
+  overflow:auto !important;
+  background:#fff !important;
+  position:relative !important;
+  z-index:1 !important;
+}
+.tkf-qr-wrap{
+  position:relative !important;
+  width:220px !important;
+  height:220px !important;
+  max-width:220px !important;
+  max-height:220px !important;
+  margin:0 auto !important;
+  overflow:hidden !important;
+}
+.tkf-qr-wrap .public-qr-img,
+#public-qr-img{
+  display:block !important;
+  width:220px !important;
+  height:220px !important;
+  max-width:220px !important;
+  max-height:220px !important;
+  object-fit:contain !important;
+  margin:0 auto !important;
+  box-sizing:border-box !important;
+}
+.tkf-qr-logo{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  transform:translate(-50%,-50%) !important;
+  width:52px !important;
+  height:52px !important;
+  max-width:52px !important;
+  max-height:52px !important;
+  object-fit:contain !important;
+  padding:4px !important;
+  margin:0 !important;
+  background:#fff !important;
+  border-radius:10px !important;
+  box-sizing:border-box !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.18) !important;
+}
+body.tkf-qr-open #public-cloud-view::before,
+body.tkf-qr-open::before{
+  display:none !important;
+  content:none !important;
+  background-image:none !important;
+}
+@media(max-width:700px){
+  #public-qr-modal.open .public-qr-card{
+    width:min(94vw,330px) !important;
+    max-height:calc(100dvh - 20px) !important;
+    padding:14px !important;
+  }
+  .tkf-qr-wrap{
+    width:190px !important;
+    height:190px !important;
+    max-width:190px !important;
+    max-height:190px !important;
+  }
+  .tkf-qr-wrap .public-qr-img,
+  #public-qr-img{
+    width:190px !important;
+    height:190px !important;
+    max-width:190px !important;
+    max-height:190px !important;
+  }
+  .tkf-qr-logo{
+    width:44px !important;
+    height:44px !important;
+    max-width:44px !important;
+    max-height:44px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -5008,7 +5095,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'11.9',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'12.0',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -5184,13 +5271,21 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     });
 
     if(!parts.length){
-      track.textContent='Aguardando capturas ou avisos...';
+      const empty='Aguardando capturas ou avisos...';
+      if(track.dataset.tkfSignature!==empty){
+        track.dataset.tkfSignature=empty;
+        track.textContent=empty;
+      }
       return;
     }
 
     const items=parts.join('<span class="tkf-news-dot">◆</span>');
-    // Duplica o conteúdo para a passagem ficar contínua e sem "buraco".
-    track.innerHTML=items + '<span class="tkf-news-dot">◆</span>' + items;
+    const full=items + '<span class="tkf-news-dot">◆</span>' + items;
+    // Só reconstrói a faixa se o conteúdo mudou; assim a animação não reinicia a cada atualização.
+    if(track.dataset.tkfSignature!==full){
+      track.dataset.tkfSignature=full;
+      track.innerHTML=full;
+    }
   };
 
   function initial(){
@@ -5217,7 +5312,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
 
     updateTkfNewsTicker();
     window.addEventListener('storage',()=>setTimeout(()=>updateTkfNewsTicker(),50));
-    setInterval(()=>updateTkfNewsTicker(),3000);
+    setInterval(()=>updateTkfNewsTicker(),5000);
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initial);
@@ -5249,7 +5344,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     const track=document.getElementById('tkf-news-track');
     if(!win || !track) return;
 
-    // Começa do início sem transformação CSS.
+    // Usa rolagem nativa; ao reiniciar por mudança real de conteúdo, volta ao início.
     win.scrollLeft=0;
     track.style.animation='none';
     track.style.transform='none';
