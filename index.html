@@ -1980,8 +1980,8 @@ body.public-telao .public-title-brand{grid-template-columns:160px minmax(0,1fr) 
 .tkf-news-item{display:inline-block !important;padding:0 24px !important}
 .tkf-news-dot{opacity:.55 !important;padding:0 4px !important}
 @keyframes tkfRealTicker{
-  from{transform:translateX(0)}
-  to{transform:translateX(-100%)}
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-100%,0,0)}
 }
 body.public-dark .tkf-news-ticker{background:#042f34 !important}
 @media(max-width:700px){
@@ -2075,6 +2075,47 @@ body.public-dark .tkf-news-item.tkf-custom-notice{
   }
   .tkf-news-item.tkf-custom-notice .tkf-notice-text{
     font-size:.66rem !important;
+  }
+}
+</style>
+
+
+<style id="tkf-v117-ticker-sharp">
+/* ===== v11.7 • TEXTO DO TICKER MAIS NÍTIDO NO DESKTOP ===== */
+.tkf-news-ticker{
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  text-rendering:optimizeLegibility !important;
+  -webkit-font-smoothing:antialiased !important;
+  -moz-osx-font-smoothing:grayscale !important;
+}
+.tkf-news-window{
+  transform:translateZ(0) !important;
+}
+.tkf-news-track{
+  will-change:transform !important;
+  backface-visibility:hidden !important;
+  -webkit-backface-visibility:hidden !important;
+  transform:translate3d(0,0,0);
+}
+.tkf-news-item,
+.tkf-news-label,
+.tkf-news-item strong,
+.tkf-news-item small,
+.tkf-notice-tag,
+.tkf-notice-text{
+  text-shadow:none !important;
+  filter:none !important;
+  opacity:1 !important;
+  transform:none !important;
+  -webkit-font-smoothing:antialiased !important;
+  text-rendering:geometricPrecision !important;
+}
+
+/* No desktop, movimento um pouco mais lento = leitura mais nítida */
+@media(min-width:701px){
+  .tkf-news-track{
+    animation-duration:28s !important;
   }
 }
 </style>
@@ -3521,8 +3562,8 @@ body.public-telao .tkf-news-ticker{
   padding:0 3px;
 }
 @keyframes tkfNewsScroll{
-  from{transform:translateX(0)}
-  to{transform:translateX(-100%)}
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-100%,0,0)}
 }
 body.public-dark .tkf-news-ticker{
   background:rgba(4,35,39,.98);
@@ -4865,7 +4906,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'11.6',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'11.7',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
