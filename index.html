@@ -2522,6 +2522,62 @@ body.public-finished .public-official-banner{font-size:.8rem}
 }
 </style>
 
+
+<style id="tkf-v133-add-participant">
+/* ===== v13.3 • BOTÃO DE CADASTRO VISÍVEL ===== */
+.tkf-admin-table-caption{
+  gap:12px;
+  align-items:center;
+}
+.tkf-admin-table-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.tkf-add-participant-btn{
+  appearance:none;
+  border:0;
+  border-radius:10px;
+  padding:9px 13px;
+  background:linear-gradient(135deg,#0b7f89,#056b74);
+  color:#fff;
+  font:inherit;
+  font-size:.74rem;
+  font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 5px 14px rgba(5,107,116,.18);
+  white-space:nowrap;
+}
+.tkf-add-participant-btn:hover{
+  filter:brightness(1.05);
+  transform:translateY(-1px);
+}
+.tkf-add-participant-btn:active{
+  transform:translateY(0);
+}
+.tkf-add-participant-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  transform:none;
+  filter:none;
+}
+@media(max-width:760px){
+  .tkf-admin-table-caption{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .tkf-admin-table-actions{
+    width:100%;
+    justify-content:space-between;
+  }
+  .tkf-add-participant-btn{
+    flex:1 1 auto;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -2688,9 +2744,12 @@ body.public-finished .public-official-banner{font-size:.8rem}
     <div class="field" style="flex:1"><label>Cadastro</label><div style="font-size:.78rem;color:var(--muted);font-weight:800">Fotos, categoria, equipe e nº de inscrição ficam salvos no backup.</div></div>
   </div>
 
-  <div class="table-caption">
+  <div class="table-caption tkf-admin-table-caption">
     <span id="ranking-caption">Classificação geral • desempate pelo maior peixe</span>
-    <span class="count-pill" id="count-pill">👥 0 competidores</span>
+    <div class="tkf-admin-table-actions">
+      <button type="button" id="btn-add" class="tkf-add-participant-btn">＋ Cadastrar participante</button>
+      <span class="count-pill" id="count-pill">👥 0 competidores</span>
+    </div>
   </div>
 
   <div class="table-wrapper" id="wrap">
@@ -5454,7 +5513,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'13.2',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'13.3',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -6063,6 +6122,32 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     }catch(e){}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
+})();
+</script>
+
+
+<script>
+/* ===== v13.3 • CADASTRAR PARTICIPANTE ===== */
+(function(){
+  function bindAddParticipant(){
+    const btn=document.getElementById('btn-add');
+    if(!btn || btn.dataset.tkfBound==='1') return;
+    btn.dataset.tkfBound='1';
+
+    btn.addEventListener('click',()=>{
+      if(typeof adicionarNovoCompetidor==='function'){
+        adicionarNovoCompetidor();
+      }else{
+        alert('Não foi possível abrir o cadastro. Recarregue a página.');
+      }
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bindAddParticipant);
+  }else{
+    bindAddParticipant();
+  }
 })();
 </script>
 
