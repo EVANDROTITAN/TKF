@@ -4315,6 +4315,95 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
       setTimeout(()=>{applying=false},0);
     }
   }
+  const CLOUD_HIGHLIGHT_META_KEY='tkf_cloud_highlight_meta_v132';
+
+  function cloudTitle(c){
+    return String(c?.grupo||c?.nome||c?.nome1||c?.nome2||'Competidor').trim();
+  }
+  function cloudFishValues(c){
+    const arr=Array.isArray(c?.peixes)?c.peixes:[];
+    return arr.map(v=>Number(String(v??'').replace(',','.'))||0).filter(v=>v>0);
+  }
+  function cloudRankedCompetitors(state){
+    const comps=Array.isArray(state?.competidores)?state.competidores:[];
+    return comps.map(c=>{
+      const fish=cloudFishValues(c);
+      const sorted=[...fish].sort((a,b)=>b-a);
+      return {
+        raw:c,
+        name:cloudTitle(c),
+        total:fish.reduce((a,b)=>a+b,0),
+        maior:sorted[0]||0,
+        segundo:sorted[1]||0,
+        capturas:fish.length
+      };
+    }).sort((a,b)=>{
+      // Mantém o ranking principal: total e depois maior peixe.
+      if(b.total!==a.total)return b.total-a.total;
+      if((state?.tieBreak||'maior')==='segundo' && b.segundo!==a.segundo)return b.segundo-a.segundo;
+      if((state?.tieBreak||'maior')==='capturas' && b.capturas!==a.capturas)return b.capturas-a.capturas;
+      if(b.maior!==a.maior)return b.maior-a.maior;
+      return a.name.localeCompare(b.name,'pt-BR');
+    });
+  }
+  function buildCloudHighlights(state){
+    const ranked=cloudRankedCompetitors(state);
+    const valid=ranked.filter(c=>c.total>0);
+    const leader=valid[0]||null;
+
+    let record=null;
+    ranked.forEach(c=>{
+      const vals=cloudFishValues(c.raw);
+      vals.forEach((n,i)=>{
+        if(!record||n>record.value)record={value:n,name:c.name,fish:i+1};
+      });
+    });
+
+    const tie=(valid.length>=2 &&
+      Math.abs(valid[0].total-valid[1].total)<0.0001 &&
+      Math.abs(valid[0].maior-valid[1].maior)<0.0001)
+      ? `${valid[0].name}|${valid[1].name}` : '';
+
+    let meta={};
+    try{meta=JSON.parse(localStorage.getItem(CLOUD_HIGHLIGHT_META_KEY)||'{}')||{}}catch(e){}
+
+    let highlights=Array.isArray(meta.highlights)?meta.highlights:[];
+    highlights=highlights.filter(h=>Date.now()-Number(h.ts||0)<180000);
+
+    const setType=(type,text)=>{
+      highlights=highlights.filter(h=>h.type!==type);
+      if(text)highlights.push({type,text,ts:Date.now()});
+    };
+
+    if(meta.initialized){
+      if(leader && meta.leader && meta.leader!==leader.name){
+        setType('leader',`🔥 Novo líder: ${leader.name} — ${leader.total.toFixed(1).replace('.',',')} cm`);
+      }
+      if(record && Number(record.value)>Number(meta.record||0)+0.0001){
+        setType('record',`📏 Recorde atualizado: ${record.value.toFixed(1).replace('.',',')} cm — ${record.name}`);
+      }
+      if(tie && tie!==meta.tie){
+        setType('tie',`⚖️ Empate no pódio: ${tie.split('|').join(' × ')}`);
+      }else if(!tie && meta.tie){
+        setType('tie','');
+      }
+    }
+
+    const order={leader:1,record:2,tie:3};
+    highlights.sort((a,b)=>(order[a.type]||99)-(order[b.type]||99));
+
+    const nextMeta={
+      initialized:true,
+      leader:leader?.name||'',
+      record:record?.value||0,
+      tie,
+      highlights
+    };
+    try{localStorage.setItem(CLOUD_HIGHLIGHT_META_KEY,JSON.stringify(nextMeta))}catch(e){}
+
+    return highlights;
+  }
+
   async function sendNow(showMessage=true){
     if(!ready||!user){
       if(showMessage)alert('Faça login como administrador primeiro.');
@@ -4325,9 +4414,15 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
       if(showMessage)alert('Não há dados locais para enviar.');
       return false;
     }
+
+    // Gera os destaques no ADMIN e envia junto com o ranking.
+    // Dessa forma PC, celular e telão recebem exatamente os mesmos avisos.
+    const cloudHighlights=buildCloudHighlights(state);
+    const stateToCloud={...state,tkfLiveHighlights:cloudHighlights};
+
     try{
       setCloudStatus('Enviando para a nuvem...');
-      await sdk.set(sdk.ref(db,PATH),{state,updatedAt:Date.now()});
+      await sdk.set(sdk.ref(db,PATH),{state:stateToCloud,updatedAt:Date.now()});
       setCloudStatus('Sincronizado agora','ok');
       if(showMessage&&typeof toast==='function')toast('Ranking enviado para a nuvem.');
       return true;
@@ -5359,7 +5454,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'13.1',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'13.2',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -5884,6 +5979,15 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
   })();
 
   window.tkfDetectAutoHighlights=function(st,comps){
+    // Se o admin já enviou os destaques pela nuvem, eles são a fonte oficial.
+    if(Array.isArray(st?.tkfLiveHighlights)){
+      const synced=st.tkfLiveHighlights.filter(h=>Date.now()-Number(h.ts||0)<180000);
+      window.tkfAutoTickerHighlights=synced;
+      try{sessionStorage.setItem(HIGHLIGHT_KEY,JSON.stringify(synced))}catch(e){}
+      return;
+    }
+
+    // Fallback para arquivos/dados antigos sem tkfLiveHighlights.
     const valid=(comps||[]).filter(c=>Number(c.total||0)>0),leader=valid[0]||null,allFish=[];
     (comps||[]).forEach(c=>(c.peixes||[]).forEach(v=>{const n=Number(v)||0;if(n>0)allFish.push({n,name:title13(c)})}));
     allFish.sort((a,b)=>b.n-a.n);const record=allFish[0]||null;
