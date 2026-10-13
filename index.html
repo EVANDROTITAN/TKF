@@ -2364,6 +2364,107 @@ body.tkf-qr-open::before{
 }
 </style>
 
+
+<style id="tkf-v124-collapsible-filters">
+/* ===== v12.4 • FILTROS RECOLHÍVEIS ===== */
+.tkf-public-filters.tkf-filters-collapsible{
+  display:block !important;
+  padding:0 !important;
+  margin:0 0 10px !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.tkf-filter-toggle{
+  width:100%;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid #d6e3e2;
+  border-radius:12px;
+  padding:9px 12px;
+  background:#f7fbfa;
+  color:#17484d;
+  font:inherit;
+  font-size:.72rem;
+  font-weight:950;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(10,48,53,.04);
+}
+
+.tkf-filter-chevron{
+  font-size:1rem;
+  line-height:1;
+  transition:transform .18s ease;
+}
+
+.tkf-filters-collapsible.is-open .tkf-filter-chevron{
+  transform:rotate(180deg);
+}
+
+.tkf-filter-panel{
+  display:none;
+  margin-top:7px;
+  padding:9px;
+  border:1px solid #dbe6e5;
+  border-radius:12px;
+  background:#f8fbfb;
+  box-shadow:0 5px 18px rgba(10,48,53,.05);
+}
+
+.tkf-filters-collapsible.is-open .tkf-filter-panel{
+  display:block;
+}
+
+.tkf-filter-panel select{
+  width:100%;
+  box-sizing:border-box;
+  margin:0 0 8px;
+}
+
+.tkf-filter-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+body.public-dark .tkf-filter-toggle{
+  background:#0d262a;
+  color:#e7f6f4;
+  border-color:#285158;
+}
+
+body.public-dark .tkf-filter-panel{
+  background:#0d262a;
+  border-color:#1d4449;
+}
+
+@media(max-width:700px){
+  .tkf-filter-toggle{
+    min-height:46px;
+    border-radius:14px;
+    font-size:.78rem;
+    padding:10px 13px;
+  }
+
+  .tkf-filter-panel{
+    padding:10px;
+    border-radius:14px;
+  }
+
+  .tkf-filter-buttons{
+    gap:7px;
+  }
+
+  .tkf-filter-panel .tkf-pfilter{
+    padding:7px 11px;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -4421,15 +4522,26 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
       <div class="public-podium" id="public-cloud-podium"></div>
     </div>
 
-    <div class="tkf-public-filters" id="tkf-public-filters">
-      <div class="tkf-filter-title">Filtrar classificação</div>
-      <select id="tkf-public-category" aria-label="Categoria"><option value="all">Todas as categorias</option></select>
-      <button type="button" data-tkf-format="all" class="tkf-pfilter active">Todos</button>
-      <button type="button" data-tkf-format="solo" class="tkf-pfilter">Solo</button>
-      <button type="button" data-tkf-format="dupla" class="tkf-pfilter">Dupla</button>
-      <button type="button" data-tkf-format="equipe" class="tkf-pfilter">Equipe</button>
-      <button type="button" id="tkf-public-scored" class="tkf-pfilter">🐟 Com captura</button>
-      <button type="button" id="tkf-public-top10" class="tkf-pfilter">🏆 Top 10</button>
+    <div class="tkf-public-filters tkf-filters-collapsible" id="tkf-public-filters">
+      <button type="button" class="tkf-filter-toggle" id="tkf-filter-toggle" aria-expanded="false" aria-controls="tkf-filter-panel">
+        <span>🔎 Filtros da classificação</span>
+        <span class="tkf-filter-chevron" aria-hidden="true">⌄</span>
+      </button>
+
+      <div class="tkf-filter-panel" id="tkf-filter-panel">
+        <select id="tkf-public-category" aria-label="Categoria">
+          <option value="all">Todas as categorias</option>
+        </select>
+
+        <div class="tkf-filter-buttons">
+          <button type="button" data-tkf-format="all" class="tkf-pfilter active">Todos</button>
+          <button type="button" data-tkf-format="solo" class="tkf-pfilter">Solo</button>
+          <button type="button" data-tkf-format="dupla" class="tkf-pfilter">Dupla</button>
+          <button type="button" data-tkf-format="equipe" class="tkf-pfilter">Equipe</button>
+          <button type="button" id="tkf-public-scored" class="tkf-pfilter">🐟 Com captura</button>
+          <button type="button" id="tkf-public-top10" class="tkf-pfilter">🏆 Top 10</button>
+        </div>
+      </div>
     </div>
     <div id="tkf-telao-bigfish" class="tkf-telao-bigfish" aria-live="polite"></div>
     <div class="public-table-card">
@@ -5150,7 +5262,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'12.3',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'12.4',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -5498,6 +5610,43 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
 
   window.addEventListener('resize',scheduleRestart);
   window.addEventListener('orientationchange',scheduleRestart);
+})();
+</script>
+
+
+<script>
+/* ===== v12.4 • ABRIR/FECHAR FILTROS PÚBLICOS ===== */
+(function(){
+  function initTkfCollapsibleFilters(){
+    const wrap=document.getElementById('tkf-public-filters');
+    const btn=document.getElementById('tkf-filter-toggle');
+    const panel=document.getElementById('tkf-filter-panel');
+    if(!wrap || !btn || !panel) return;
+
+    const setOpen=(open)=>{
+      wrap.classList.toggle('is-open',!!open);
+      btn.setAttribute('aria-expanded',open?'true':'false');
+    };
+
+    setOpen(false);
+
+    btn.addEventListener('click',()=>{
+      setOpen(!wrap.classList.contains('is-open'));
+    });
+
+    // Fecha ao tocar fora no celular/desktop, sem interferir na escolha dos filtros.
+    document.addEventListener('click',(ev)=>{
+      if(!wrap.contains(ev.target) && wrap.classList.contains('is-open')){
+        setOpen(false);
+      }
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initTkfCollapsibleFilters);
+  }else{
+    initTkfCollapsibleFilters();
+  }
 })();
 </script>
 
