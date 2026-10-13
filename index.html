@@ -1991,6 +1991,29 @@ body.public-dark .tkf-news-ticker{background:#042f34 !important}
 }
 </style>
 
+<style>
+/* ===== v11.5 • AVISO PERSONALIZADO NO TICKER ===== */
+#menu-ticker-notice{
+  width:100%;
+  min-height:76px;
+  resize:vertical;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:9px 10px;
+  background:var(--card);
+  color:var(--text);
+  font:inherit;
+  line-height:1.35;
+  box-sizing:border-box;
+}
+.tkf-news-item.tkf-custom-notice{
+  font-weight:950 !important;
+  color:#fff6c8 !important;
+}
+.tkf-news-item.tkf-custom-notice strong{
+  color:#ffd15c !important;
+}
+</style>
 </head>
 <body>
 <div class="container">
@@ -2947,6 +2970,21 @@ body.public-dark .tkf-news-ticker{background:#042f34 !important}
           <label for="menu-tournament-location">Local</label>
           <input id="menu-tournament-location" type="text" placeholder="Ex.: Represa / Clube / Cidade">
         </div>
+
+        <div class="drawer-field wide">
+          <label for="menu-ticker-notice">📢 Aviso no rodapé</label>
+          <textarea id="menu-ticker-notice" rows="3" maxlength="220" placeholder="Ex.: Pesagem encerra às 15h • Premiação às 16h • Favor apresentar o peixe à organização."></textarea>
+          <div style="font-size:.66rem;color:var(--muted);margin-top:5px;line-height:1.3">
+            Este aviso aparecerá na faixa de notícias antes dos destaques dos maiores peixes.
+          </div>
+        </div>
+
+        <div class="drawer-field wide">
+          <label class="drawer-switch" style="padding:8px 0">
+            <span>📣 Mostrar aviso no rodapé</span>
+            <input type="checkbox" id="menu-ticker-notice-enabled">
+          </label>
+        </div>
       </div>
     </div>
     <div class="drawer-section"><div class="drawer-title">Ações</div><div class="drawer-grid">
@@ -3101,8 +3139,20 @@ mudarQtdPeixes = function(){
   window.tkfAutoBackup?.('Antes de alterar quantidade de peixes'); pushUndoSnapshot(); const old=qtdPeixesAtual; qtdPeixesAtual=parseInt(qs('#num-peixes').value,10); gerarCabecalho(); qsa('#tabela-corpo tr').forEach(row=>{const p=rowProfile(row);const oldFish=qsa('.input-peixe',row).map(i=>i.value);const fish=new Array(qtdPeixesAtual).fill('');oldFish.forEach((v,i)=>{if(i<qtdPeixesAtual)fish[i]=v});atualizarHTMLDaLinha(row,p.nome,fish,p)}); addHistory('Quantidade de peixes alterada',`${old} → ${qtdPeixesAtual}`); salvarTudo();atualizarCalculos(true);applyEditLock();
 };
 salvarTudo = function(){
-  const titulo=(qs('#titulo-torneio').innerText||'').trim(); const competidores=qsa('#tabela-corpo tr').map(row=>({...rowProfile(row),peixes:qsa('.input-peixe',row).map(i=>i.value)}));
-  localStorage.setItem(STORAGE_KEY,JSON.stringify({version:'MAX',titulo,qtd:qtdPeixesAtual,limite:getLimite(),tieBreak:qs('#tie-break')?.value||'maior',competidores})); atualizarEstadoSalvo();
+  const titulo=(qs('#titulo-torneio').innerText||'').trim();
+  const competidores=qsa('#tabela-corpo tr').map(row=>({...rowProfile(row),peixes:qsa('.input-peixe',row).map(i=>i.value)}));
+  let anterior={};
+  try{anterior=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}}catch(e){}
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({
+    ...anterior,
+    version:'MAX',
+    titulo,
+    qtd:qtdPeixesAtual,
+    limite:getLimite(),
+    tieBreak:qs('#tie-break')?.value||'maior',
+    competidores
+  }));
+  atualizarEstadoSalvo();
 };
 carregarDoStorage = function(){
   let dados=null;try{dados=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')}catch(e){} setTheme(localStorage.getItem(THEME_KEY)||'light');
@@ -4606,10 +4656,15 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     const a=document.getElementById('menu-open-time');
     const f=document.getElementById('menu-close-time');
     const l=document.getElementById('menu-tournament-location');
+    const notice=document.getElementById('menu-ticker-notice');
+    const noticeEnabled=document.getElementById('menu-ticker-notice-enabled');
+
     if(d && document.activeElement!==d) d.value=st.dataTorneio||'';
     if(a && document.activeElement!==a) a.value=st.horaAbertura||'';
     if(f && document.activeElement!==f) f.value=st.horaFechamento||'';
     if(l && document.activeElement!==l) l.value=st.localTorneio||'';
+    if(notice && document.activeElement!==notice) notice.value=st.tickerNotice||'';
+    if(noticeEnabled) noticeEnabled.checked=!!st.tickerNoticeEnabled;
   };
 
   function bind(){
@@ -4627,14 +4682,24 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
       ['menu-tournament-date','dataTorneio'],
       ['menu-open-time','horaAbertura'],
       ['menu-close-time','horaFechamento'],
-      ['menu-tournament-location','localTorneio']
+      ['menu-tournament-location','localTorneio'],
+      ['menu-ticker-notice','tickerNotice']
     ];
     map.forEach(([id,field])=>{
       const el=document.getElementById(id);
       if(!el) return;
-      const save=()=>writeState({[field]:el.value||''});
+      const save=()=>{
+        writeState({[field]:el.value||''});
+        if(typeof updateTkfNewsTicker==='function') setTimeout(()=>updateTkfNewsTicker(),30);
+      };
       el.addEventListener('change',save);
-      if(id==='menu-tournament-location') el.addEventListener('blur',save);
+      if(id==='menu-tournament-location' || id==='menu-ticker-notice') el.addEventListener('blur',save);
+    });
+
+    const noticeEnabled=document.getElementById('menu-ticker-notice-enabled');
+    noticeEnabled?.addEventListener('change',()=>{
+      writeState({tickerNoticeEnabled:!!noticeEnabled.checked});
+      if(typeof updateTkfNewsTicker==='function') setTimeout(()=>updateTkfNewsTicker(),30);
     });
 
     applyTournamentPresentation(readState());
@@ -4735,7 +4800,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'11.4',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'11.5',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -4871,23 +4936,51 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     return all.slice(0,3);
   }
 
+  function getTickerNoticeState(){
+    let st={};
+    try{
+      if(window.__tkfPublicState && typeof window.__tkfPublicState==='object'){
+        st=window.__tkfPublicState;
+      }
+    }catch(e){}
+
+    if(!st || (!('tickerNotice' in st) && !('tickerNoticeEnabled' in st))){
+      try{
+        const key=(typeof STORAGE_KEY!=='undefined')?STORAGE_KEY:'pescaUltra2025_tablet';
+        st=JSON.parse(localStorage.getItem(key)||'{}')||{};
+      }catch(e){st={}}
+    }
+
+    return {
+      text:String(st.tickerNotice||'').trim(),
+      enabled:!!st.tickerNoticeEnabled
+    };
+  }
+
   window.updateTkfNewsTicker=function(comps){
     const track=document.getElementById('tkf-news-track');
     const ticker=document.getElementById('tkf-news-ticker');
     if(!track||!ticker) return;
 
     const top=buildTopFish(Array.isArray(comps)?comps:getPublicCompetitors());
+    const notice=getTickerNoticeState();
+    const parts=[];
 
-    if(!top.length){
-      track.textContent='Aguardando capturas...';
-      return;
+    if(notice.enabled && notice.text){
+      parts.push(`<span class="tkf-news-item tkf-custom-notice">📢 <strong>AVISO:</strong> ${esc(notice.text)}</span>`);
     }
 
     const labels=['🥇 Maior peixe','🥈 2º maior','🥉 3º maior'];
-    const items=top.map((x,i)=>
-      `<span class="tkf-news-item">${labels[i]}: <strong>${esc(x.name)}</strong> — ${x.value.toFixed(1).replace('.',',')} cm <small>(P${x.fish})</small></span>`
-    ).join('<span class="tkf-news-dot">◆</span>');
+    top.forEach((x,i)=>{
+      parts.push(`<span class="tkf-news-item">${labels[i]}: <strong>${esc(x.name)}</strong> — ${x.value.toFixed(1).replace('.',',')} cm <small>(P${x.fish})</small></span>`);
+    });
 
+    if(!parts.length){
+      track.textContent='Aguardando capturas ou avisos...';
+      return;
+    }
+
+    const items=parts.join('<span class="tkf-news-dot">◆</span>');
     // Duplica o conteúdo para a passagem ficar contínua e sem "buraco".
     track.innerHTML=items + '<span class="tkf-news-dot">◆</span>' + items;
   };
