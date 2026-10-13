@@ -2035,7 +2035,7 @@ body.public-telao .public-title-brand{grid-template-columns:160px minmax(0,1fr) 
       <button class="btn btn-awards" id="btn-awards" type="button">🏆 Premiação</button>
       <button class="btn btn-history" id="btn-history" type="button">🕘 Histórico</button>
       <button class="btn btn-export" id="btn-export" type="button">📥 Exportar Excel (CSV)</button>
-      <button class="btn btn-secondary" id="btn-print" type="button">🖨️ Imprimir</button>
+      <button class="btn btn-secondary" id="btn-print" type="button">🖨️ Imprimir relatório</button>
     </div>
 
     <div class="controls-right">
@@ -4398,6 +4398,52 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind);
   else bind();
+})();
+</script>
+
+
+<script>
+/* ===== v10.5 • IMPRESSÃO DE RELATÓRIO FORÇADA ===== */
+(function(){
+  function hardOpenTournamentReport(ev){
+    if(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+    }
+    try{
+      if(typeof closeMinimalMenu==='function') closeMinimalMenu();
+    }catch(e){}
+    try{
+      if(typeof openFinalReport==='function'){
+        openFinalReport();
+        return false;
+      }
+    }catch(err){
+      console.error('Erro ao abrir relatório:',err);
+    }
+    alert('Não foi possível abrir o relatório. Recarregue a página com a versão atual.');
+    return false;
+  }
+
+  function bindForcedPrint(){
+    const original=document.getElementById('btn-print');
+    if(original){
+      original.addEventListener('click',hardOpenTournamentReport,true);
+    }
+
+    document.querySelectorAll('[data-proxy="btn-print"]').forEach(btn=>{
+      btn.removeAttribute('data-proxy');
+      btn.textContent='🖨️ Imprimir relatório';
+      btn.addEventListener('click',hardOpenTournamentReport,true);
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bindForcedPrint);
+  }else{
+    bindForcedPrint();
+  }
 })();
 </script>
 
