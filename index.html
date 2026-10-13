@@ -2120,6 +2120,38 @@ body.public-dark .tkf-news-item.tkf-custom-notice{
 }
 </style>
 
+
+<style id="tkf-v118-desktop-crisp-ticker">
+/* ===== v11.8 • TICKER DESKTOP COM ROLAGEM NATIVA ===== */
+@media(min-width:701px){
+  .tkf-news-window{
+    overflow:hidden !important;
+    transform:none !important;
+    will-change:auto !important;
+  }
+  .tkf-news-track{
+    animation:none !important;
+    transform:none !important;
+    will-change:auto !important;
+    backface-visibility:visible !important;
+    -webkit-backface-visibility:visible !important;
+    padding-left:0 !important;
+    display:inline-block !important;
+    white-space:nowrap !important;
+  }
+  .tkf-news-item,
+  .tkf-news-label,
+  .tkf-news-item strong,
+  .tkf-news-item small,
+  .tkf-notice-tag,
+  .tkf-notice-text{
+    -webkit-font-smoothing:auto !important;
+    -moz-osx-font-smoothing:auto !important;
+    text-rendering:auto !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -4906,7 +4938,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'11.7',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'11.8',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -5120,6 +5152,87 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initial);
   else initial();
+})();
+</script>
+
+
+<script>
+/* ===== v11.8 • ROLAGEM NATIVA DO TICKER NO DESKTOP ===== */
+(function(){
+  let rafId=null;
+  let last=0;
+  let carry=0;
+
+  function stopDesktopTicker(){
+    if(rafId){
+      cancelAnimationFrame(rafId);
+      rafId=null;
+    }
+  }
+
+  function startDesktopTicker(){
+    stopDesktopTicker();
+
+    if(!window.matchMedia('(min-width: 701px)').matches) return;
+
+    const win=document.querySelector('.tkf-news-window');
+    const track=document.getElementById('tkf-news-track');
+    if(!win || !track) return;
+
+    // Começa do início sem transformação CSS.
+    win.scrollLeft=0;
+    track.style.animation='none';
+    track.style.transform='none';
+
+    const step=(ts)=>{
+      if(!last) last=ts;
+      const dt=Math.min(50,ts-last);
+      last=ts;
+
+      // Aproximadamente 34 px/segundo, sempre acumulando em pixels inteiros.
+      carry += dt * 0.034;
+      const px = Math.floor(carry);
+      if(px > 0){
+        carry -= px;
+        win.scrollLeft += px;
+
+        const half = track.scrollWidth / 2;
+        if(half > 0 && win.scrollLeft >= half){
+          win.scrollLeft -= half;
+        }
+      }
+      rafId=requestAnimationFrame(step);
+    };
+
+    rafId=requestAnimationFrame(step);
+  }
+
+  function restart(){
+    last=0;
+    carry=0;
+    setTimeout(startDesktopTicker,120);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',restart);
+  }else{
+    restart();
+  }
+
+  window.addEventListener('resize',restart);
+  window.addEventListener('orientationchange',restart);
+
+  // Reinicia quando o conteúdo do ticker muda.
+  const observer=new MutationObserver(()=>restart());
+  const attach=()=>{
+    const track=document.getElementById('tkf-news-track');
+    if(track) observer.observe(track,{childList:true,subtree:true,characterData:true});
+  };
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',attach);
+  }else{
+    attach();
+  }
 })();
 </script>
 
