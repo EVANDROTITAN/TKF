@@ -2465,6 +2465,63 @@ body.public-dark .tkf-filter-panel{
 }
 </style>
 
+
+<style id="tkf-v130-features">
+#menu-regulations{width:100%;min-height:110px;resize:vertical;border:1px solid var(--border);border-radius:10px;padding:9px 10px;background:var(--card);color:var(--text);font:inherit;line-height:1.4;box-sizing:border-box}
+
+.tkf-public-extra-modal{display:none;position:fixed;inset:0;z-index:360000;padding:18px;background:rgba(0,20,24,.78);align-items:center;justify-content:center;overflow:auto}
+.tkf-public-extra-modal.open{display:flex}
+.tkf-public-extra-card{position:relative;width:min(94vw,680px);max-height:86dvh;overflow:auto;border-radius:20px;padding:18px;background:#fff;color:#17383b;box-shadow:0 24px 80px rgba(0,0,0,.38)}
+body.public-dark .tkf-public-extra-card{background:#0d262a;color:#eaf7f6;border:1px solid #285158}
+.tkf-public-extra-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.tkf-public-extra-head h3{margin:3px 0 0;font-size:1.15rem}
+.tkf-extra-kicker{font-size:.62rem;font-weight:1000;letter-spacing:.08em;color:#687f81}
+body.public-dark .tkf-extra-kicker{color:#9cb9bb}
+.tkf-extra-close{width:34px;height:34px;border-radius:50%;border:1px solid #d8e5e4;background:#f6f9f9;color:#17383b;font-weight:1000;cursor:pointer}
+body.public-dark .tkf-extra-close{background:#16363b;color:#fff;border-color:#31545a}
+.tkf-rules-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.tkf-rule-chip{border:1px solid #dde8e7;border-radius:12px;padding:9px 10px;background:#f8fbfb;font-size:.72rem;line-height:1.35}
+body.public-dark .tkf-rule-chip{background:#102f34;border-color:#285158}
+.tkf-rules-text{white-space:pre-wrap;border:1px solid #dde8e7;border-radius:14px;padding:14px;background:#fbfdfd;font-size:.78rem;line-height:1.55}
+body.public-dark .tkf-rules-text{background:#102b30;border-color:#31545a}
+
+.tkf-public-row-clickable,.public-podium-card[data-tkf-participant-index]{cursor:pointer}
+.tkf-public-row-clickable:hover td{background:rgba(64,176,168,.08)!important}
+.public-podium-card[data-tkf-participant-index]:active{transform:scale(.992)}
+.tkf-participant-card{width:min(94vw,520px);text-align:center;overflow:visible}
+.tkf-participant-close{position:absolute;right:14px;top:14px;z-index:2}
+.tkf-participant-photo{width:112px;height:112px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 7px 24px rgba(0,0,0,.16);margin:4px auto 10px}
+.tkf-participant-name{font-size:1.35rem;font-weight:1000;margin-bottom:3px}
+.tkf-participant-sub{font-size:.72rem;color:#748789;margin-bottom:10px}
+.tkf-participant-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.tkf-participant-stat{border:1px solid #dde8e7;border-radius:12px;padding:10px;background:#f8fbfb}
+body.public-dark .tkf-participant-stat{background:#102f34;border-color:#285158}
+.tkf-participant-stat b{display:block;font-size:1.05rem;color:#0b7580}
+body.public-dark .tkf-participant-stat b{color:#76ddd5}
+.tkf-participant-fishes{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:10px}
+.tkf-participant-fish{min-width:66px;border-radius:10px;padding:8px 9px;border:1px solid #dce8e7;background:#f6fafa;font-weight:950;font-size:.74rem}
+body.public-dark .tkf-participant-fish{background:#16363b;border-color:#285158}
+
+.tkf-qr-kind-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 12px}
+.tkf-qr-kind{border:1px solid #d6e3e2;background:#f7faf9;color:#17484d;border-radius:999px;padding:7px 8px;font-size:.65rem;font-weight:950;cursor:pointer}
+.tkf-qr-kind.active{background:#0b6f79;color:#fff;border-color:#0b6f79}
+body.public-dark .tkf-qr-kind{background:#16363b;color:#e7f6f4;border-color:#31545a}
+body.public-dark .tkf-qr-kind.active{background:#0b6f79;border-color:#5cd6cb}
+
+.tkf-news-item.tkf-auto-highlight{display:inline-flex!important;align-items:center!important;padding:5px 11px!important;border-radius:999px!important;background:rgba(99,207,196,.13)!important;border:1px solid rgba(99,207,196,.28)!important;color:#dffffb!important;font-weight:1000!important}
+
+.tkf-final-admin-banner{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:500000;background:#f0a23d;color:#17383b;border-radius:999px;padding:8px 14px;font-size:.72rem;font-weight:1000;box-shadow:0 8px 26px rgba(0,0,0,.22)}
+body.public-finished .public-official-banner{font-size:.8rem}
+
+@media(max-width:700px){
+  .tkf-rules-summary{grid-template-columns:1fr}
+  .tkf-public-extra-card{padding:15px}
+  .tkf-participant-photo{width:92px;height:92px}
+  .tkf-participant-name{font-size:1.15rem}
+  .tkf-qr-kind-grid{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -3435,6 +3492,14 @@ body.public-dark .tkf-filter-panel{
             <span>📣 Mostrar aviso no rodapé</span>
             <input type="checkbox" id="menu-ticker-notice-enabled">
           </label>
+        </div>
+
+        <div class="drawer-field wide">
+          <label for="menu-regulations">📜 Regulamento / regras do torneio</label>
+          <textarea id="menu-regulations" rows="5" maxlength="1800" placeholder="Ex.: Somente peixes medidos pela organização. Em caso de empate, vale o maior peixe."></textarea>
+          <div style="font-size:.66rem;color:var(--muted);margin-top:5px;line-height:1.3">
+            O público poderá consultar estas regras pelo botão “Regras” e por um QR Code próprio.
+          </div>
         </div>
       </div>
     </div>
@@ -4484,6 +4549,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         <span class="public-count public-telao-badge">📺 MODO TELÃO</span>
         <button class="public-action-btn" id="public-share-btn" type="button">↗ Compartilhar</button>
         <button class="public-action-btn" id="public-qr-btn" type="button">▦ QR Code</button>
+        <button class="public-action-btn" id="public-rules-btn" type="button">📜 Regras</button>
         <button class="public-action-btn public-theme-btn" id="public-theme-btn" type="button">🌙 Escuro</button>
         <button class="public-action-btn" id="public-telao-btn" type="button">📺 Telão</button>
       </div>
@@ -4572,11 +4638,35 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
   </div>
 </div>
 
+
+<div id="tkf-rules-modal" class="tkf-public-extra-modal" aria-hidden="true">
+  <div class="tkf-public-extra-card">
+    <div class="tkf-public-extra-head">
+      <div><div class="tkf-extra-kicker">TKF • INFORMAÇÕES OFICIAIS</div><h3>📜 Regras do torneio</h3></div>
+      <button type="button" class="tkf-extra-close" data-close-extra="rules">✕</button>
+    </div>
+    <div id="tkf-rules-summary" class="tkf-rules-summary"></div>
+    <div id="tkf-rules-text" class="tkf-rules-text">Regulamento ainda não informado pela organização.</div>
+  </div>
+</div>
+
+<div id="tkf-participant-modal" class="tkf-public-extra-modal" aria-hidden="true">
+  <div class="tkf-public-extra-card tkf-participant-card">
+    <button type="button" class="tkf-extra-close tkf-participant-close" data-close-extra="participant">✕</button>
+    <div id="tkf-participant-content"></div>
+  </div>
+</div>
+
 <div id="public-qr-modal">
   <div class="public-qr-card">
-    <h3>QR Code do ranking</h3>
-    <p>Aponte a câmera para acompanhar a classificação ao vivo.</p>
-    <img id="public-qr-img" class="public-qr-img" alt="QR Code do ranking">
+    <h3 id="tkf-public-qr-title">QR Code do ranking</h3>
+    <p id="tkf-public-qr-desc">Escolha o tipo de acesso que deseja compartilhar.</p>
+    <div class="tkf-qr-kind-grid">
+      <button type="button" class="tkf-qr-kind active" data-tkf-qr-kind="ranking">🏆 Ranking</button>
+      <button type="button" class="tkf-qr-kind" data-tkf-qr-kind="telao">📺 Telão</button>
+      <button type="button" class="tkf-qr-kind" data-tkf-qr-kind="regras">📜 Regras</button>
+    </div>
+    <img id="public-qr-img" class="public-qr-img" alt="QR Code TKF">
     <div><button class="public-action-btn public-qr-close" id="public-qr-close" type="button">Fechar</button></div>
   </div>
 </div>
@@ -4721,6 +4811,10 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     const comps=window.tkfApplyPublicFilter?window.tkfApplyPublicFilter(compsAll):compsAll;
     window.__tkfPublicData={st,compsAll,comps};
     window.__tkfPublicLastPayload=data;
+    try{window.tkfDetectAutoHighlights?.(st,compsAll)}catch(e){}
+    try{window.tkfUpdateRulesModal?.(st)}catch(e){}
+    try{window.tkfApplyFinalPublic?.(st,compsAll)}catch(e){}
+    try{setTimeout(()=>window.updateTkfNewsTicker?.(compsAll),0)}catch(e){}
     const qtdPeixes=fishCountFromState(st,comps);
     rebuildPublicFishColumns(qtdPeixes);
     const captures=comps.reduce((a,c)=>a+c.capturas,0);
@@ -4770,7 +4864,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         return `<div class="public-podium-card ${cls}"><div class="public-podium-rank">${medal} ${rank}º lugar</div><div class="public-podium-name">Vaga disponível</div><div class="public-podium-total">—</div></div>`;
       }
       const title=titleOf(c), people=peopleOf(c), photo=c.foto||fallbackAvatar(title);
-      return `<div class="public-podium-card ${cls}">
+      return `<div class="public-podium-card ${cls}" data-tkf-participant-index="${idx}" role="button" tabindex="0" title="Ver detalhes">
         ${rank===1?'<div class="public-champion-ribbon">🏆 CAMPEÃO</div>':''}
         <div class="public-podium-rank">${medal} ${rank}º lugar</div>
         <img class="public-podium-photo" src="${esc(photo)}" alt="">
@@ -4793,7 +4887,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         for(let f=0;f<qtdPeixes;f++){
           fishCells+=`<td class="num"><span class="public-fish-chip">${fishText(c,f)}</span></td>`;
         }
-        return `<tr>
+        return `<tr class="tkf-public-row-clickable" data-tkf-participant-index="${i}" title="Toque para ver detalhes">
           <td class="public-rank-num">${i+1}º</td>
           <td>
             <div class="public-participant">
@@ -5120,6 +5214,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     const l=document.getElementById('menu-tournament-location');
     const notice=document.getElementById('menu-ticker-notice');
     const noticeEnabled=document.getElementById('menu-ticker-notice-enabled');
+    const regulations=document.getElementById('menu-regulations');
 
     if(d && document.activeElement!==d) d.value=st.dataTorneio||'';
     if(a && document.activeElement!==a) a.value=st.horaAbertura||'';
@@ -5127,6 +5222,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     if(l && document.activeElement!==l) l.value=st.localTorneio||'';
     if(notice && document.activeElement!==notice) notice.value=st.tickerNotice||'';
     if(noticeEnabled) noticeEnabled.checked=!!st.tickerNoticeEnabled;
+    if(regulations && document.activeElement!==regulations) regulations.value=st.regulamento||'';
   };
 
   function bind(){
@@ -5145,7 +5241,8 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
       ['menu-open-time','horaAbertura'],
       ['menu-close-time','horaFechamento'],
       ['menu-tournament-location','localTorneio'],
-      ['menu-ticker-notice','tickerNotice']
+      ['menu-ticker-notice','tickerNotice'],
+      ['menu-regulations','regulamento']
     ];
     map.forEach(([id,field])=>{
       const el=document.getElementById(id);
@@ -5155,7 +5252,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         if(typeof updateTkfNewsTicker==='function') setTimeout(()=>updateTkfNewsTicker(),30);
       };
       el.addEventListener('change',save);
-      if(id==='menu-tournament-location' || id==='menu-ticker-notice') el.addEventListener('blur',save);
+      if(id==='menu-tournament-location' || id==='menu-ticker-notice' || id==='menu-regulations') el.addEventListener('blur',save);
     });
 
     const noticeEnabled=document.getElementById('menu-ticker-notice-enabled');
@@ -5262,7 +5359,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'12.4',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'13.0',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -5431,6 +5528,12 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     if(notice.enabled && notice.text){
       parts.push(`<span class="tkf-news-item tkf-custom-notice"><span class="tkf-notice-icon">📣</span><span class="tkf-notice-tag">COMUNICADO</span><span class="tkf-notice-text">${esc(notice.text)}</span></span>`);
     }
+
+    const autoHighlights=(window.tkfAutoTickerHighlights||[]).filter(h=>Date.now()-Number(h.ts||0)<180000);
+    window.tkfAutoTickerHighlights=autoHighlights;
+    autoHighlights.forEach(h=>{
+      parts.push(`<span class="tkf-news-item tkf-auto-highlight">${esc(h.text||'')}</span>`);
+    });
 
     const labels=['🥇 Maior peixe','🥈 2º maior','🥉 3º maior'];
     top.forEach((x,i)=>{
@@ -5647,6 +5750,170 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
   }else{
     initTkfCollapsibleFilters();
   }
+})();
+</script>
+
+
+<script>
+/* ===== v13.0 • REGRAS / PERFIL / QR / FINAL / ALERTAS ===== */
+(function(){
+  const STATE_KEY=(typeof STORAGE_KEY!=='undefined')?STORAGE_KEY:'pescaUltra2025_tablet';
+  const HIGHLIGHT_KEY='tkf_public_highlights_v13';
+  const LOGO_SRC=(document.querySelector('.public-title-logo')?.src||document.querySelector('.tkf-header-logo')?.src||'');
+
+  function esc13(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function readState13(){try{return JSON.parse(localStorage.getItem(STATE_KEY)||'{}')||{}}catch(e){return{}}}
+  function fmtDate13(v){if(!v)return'Não definida';const p=String(v).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(v)}
+  function tieLabel(v){return({maior:'Maior peixe',segundo:'2º maior peixe',capturas:'Mais capturas válidas',numero:'Menor nº de inscrição'})[v]||'Maior peixe'}
+  function title13(c){return c?.grupo||c?.nome||c?.nome1||c?.nome2||'Competidor'}
+
+  window.tkfUpdateRulesModal=function(st){
+    st=st||window.__tkfPublicState||readState13();
+    const summary=document.getElementById('tkf-rules-summary'),body=document.getElementById('tkf-rules-text');
+    const qtd=Math.max(1,parseInt(st.qtd,10)||0);
+    if(summary){
+      const horario=(st.horaAbertura||st.horaFechamento)?`${st.horaAbertura||'--:--'} às ${st.horaFechamento||'--:--'}`:'Não definido';
+      summary.innerHTML=`
+        <div class="tkf-rule-chip"><b>🎯 Peixes válidos</b><br>${qtd}</div>
+        <div class="tkf-rule-chip"><b>⚖️ Desempate</b><br>${esc13(tieLabel(st.tieBreak||'maior'))}</div>
+        <div class="tkf-rule-chip"><b>🕒 Horário</b><br>${esc13(horario)}</div>
+        <div class="tkf-rule-chip"><b>📍 Local</b><br>${esc13(st.localTorneio||'Não definido')}</div>
+        <div class="tkf-rule-chip"><b>📅 Data</b><br>${esc13(fmtDate13(st.dataTorneio))}</div>
+        <div class="tkf-rule-chip"><b>🏁 Status</b><br>${st.torneioStatus==='finalizado'?'Resultado oficial':st.torneioStatus==='ao_vivo'?'Ao vivo':'Não iniciado'}</div>`;
+    }
+    if(body)body.textContent=String(st.regulamento||'').trim()||'Regulamento ainda não informado pela organização.';
+  };
+  function openRules(){window.tkfUpdateRulesModal(window.__tkfPublicState||readState13());const m=document.getElementById('tkf-rules-modal');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false')}}
+  function closeRules(){const m=document.getElementById('tkf-rules-modal');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true')}}
+
+  function openParticipant(index){
+    const data=window.__tkfPublicData;if(!data||!Array.isArray(data.comps))return;
+    const c=data.comps[Number(index)];if(!c)return;
+    const title=title13(c),photo=c.foto||(typeof fallbackAvatar==='function'?fallbackAvatar(title):'');
+    const people=(typeof peopleOf==='function'?peopleOf(c):(c.pessoas||''));
+    const mode=(typeof formatMode==='function'?formatMode(c):(c.modalidade||'Solo'));
+    const fishes=Array.isArray(c.peixes)?c.peixes:[],total=Number(c.total||0),maior=Number(c.maior||0);
+    const content=document.getElementById('tkf-participant-content');
+    if(content)content.innerHTML=`
+      <div class="tkf-extra-kicker">DETALHES DA PARTICIPAÇÃO</div>
+      <img class="tkf-participant-photo" src="${esc13(photo)}" alt="">
+      <div class="tkf-participant-name">${esc13(title)}</div>
+      <div class="tkf-participant-sub">${esc13(people||c.categoria||'')} • ${esc13(mode)}</div>
+      <div class="tkf-participant-stats">
+        <div class="tkf-participant-stat"><span>Posição</span><b>${Number(index)+1}º</b></div>
+        <div class="tkf-participant-stat"><span>Total</span><b>${total.toFixed(1).replace('.',',')} cm</b></div>
+        <div class="tkf-participant-stat"><span>Maior peixe</span><b>${maior.toFixed(1).replace('.',',')} cm</b></div>
+        <div class="tkf-participant-stat"><span>Capturas</span><b>${fishes.filter(v=>Number(v)>0).length}</b></div>
+      </div>
+      <div style="font-size:.7rem;font-weight:1000;letter-spacing:.06em;color:#718486;text-transform:uppercase">Medidas</div>
+      <div class="tkf-participant-fishes">${fishes.map((v,i)=>`<div class="tkf-participant-fish">P${i+1}<br>${Number(v)>0?Number(v).toFixed(1).replace('.',',')+' cm':'—'}</div>`).join('')}</div>`;
+    const m=document.getElementById('tkf-participant-modal');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false')}
+  }
+  function closeParticipant(){const m=document.getElementById('tkf-participant-modal');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true')}}
+
+  function urlFor(kind){
+    const u=new URL(location.origin+location.pathname);u.searchParams.set('public','1');
+    if(kind==='telao')u.searchParams.set('telao','1');
+    if(kind==='regras')u.searchParams.set('regras','1');
+    if(document.body.classList.contains('public-dark'))u.searchParams.set('theme','dark');
+    return u.toString();
+  }
+  function setQrKind(kind){
+    kind=['ranking','telao','regras'].includes(kind)?kind:'ranking';window.tkfCurrentQrKind=kind;
+    document.querySelectorAll('.tkf-qr-kind').forEach(b=>b.classList.toggle('active',b.dataset.tkfQrKind===kind));
+    const labels={ranking:['QR Code do ranking','Acompanhe a classificação ao vivo.'],telao:['QR Code do telão','Abra diretamente o placar em modo telão.'],regras:['QR Code das regras','Abra o regulamento e as informações oficiais.']};
+    const [t,d]=labels[kind];const h=document.getElementById('tkf-public-qr-title'),p=document.getElementById('tkf-public-qr-desc');
+    if(h)h.textContent=t;if(p)p.textContent=d;
+    const img=document.getElementById('public-qr-img');if(img)img.src='https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=12&data='+encodeURIComponent(urlFor(kind));
+  }
+  async function downloadCurrentQR(ev){
+    const btn=ev.target.closest('.tkf-qr-download');if(!btn)return;
+    ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation?.();
+    try{
+      const kind=window.tkfCurrentQrKind||'ranking',url=urlFor(kind);
+      const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&margin=35&data='+encodeURIComponent(url);
+      const blob=await(await fetch(qrUrl)).blob();
+      const qrData=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)});
+      const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><rect width="1000" height="1000" fill="white"/><image href="${qrData}" width="1000" height="1000"/><rect x="410" y="410" width="180" height="180" rx="30" fill="white"/><image href="${LOGO_SRC}" x="425" y="425" width="150" height="150" preserveAspectRatio="xMidYMid meet"/></svg>`;
+      const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));a.download=`QR_TKF_${kind}.svg`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1800);
+    }catch(e){alert('Não consegui baixar este QR agora.')}
+  }
+
+  function loadHighlights(){try{return JSON.parse(sessionStorage.getItem(HIGHLIGHT_KEY)||'[]')||[]}catch(e){return[]}}
+  function saveHighlights(arr){try{sessionStorage.setItem(HIGHLIGHT_KEY,JSON.stringify(arr.slice(-5)))}catch(e){}}
+  function addHighlight(text){
+    let arr=loadHighlights().filter(h=>Date.now()-Number(h.ts||0)<180000),last=arr[arr.length-1];
+    if(!last||last.text!==text){arr.push({text,ts:Date.now()});arr=arr.slice(-5);saveHighlights(arr);window.tkfAutoTickerHighlights=arr}
+  }
+  window.tkfAutoTickerHighlights=loadHighlights().filter(h=>Date.now()-Number(h.ts||0)<180000);
+  window.tkfDetectAutoHighlights=function(st,comps){
+    const valid=(comps||[]).filter(c=>Number(c.total||0)>0),leader=valid[0]||null,allFish=[];
+    (comps||[]).forEach(c=>(c.peixes||[]).forEach(v=>{const n=Number(v)||0;if(n>0)allFish.push({n,name:title13(c)})}));
+    allFish.sort((a,b)=>b.n-a.n);const record=allFish[0]||null;
+    const tie=(valid.length>=2&&Math.abs(Number(valid[0].total||0)-Number(valid[1].total||0))<.0001&&Math.abs(Number(valid[0].maior||0)-Number(valid[1].maior||0))<.0001)?`${title13(valid[0])}|${title13(valid[1])}`:'';
+    let prev={};try{prev=JSON.parse(sessionStorage.getItem('tkf_highlight_baseline_v13')||'{}')||{}}catch(e){}
+    if(prev.initialized){
+      if(leader&&prev.leader&&prev.leader!==title13(leader))addHighlight(`🔥 Novo líder: ${title13(leader)} — ${Number(leader.total||0).toFixed(1).replace('.',',')} cm`);
+      if(record&&Number(record.n)>Number(prev.record||0)+.0001)addHighlight(`📏 Recorde atualizado: ${Number(record.n).toFixed(1).replace('.',',')} cm — ${record.name}`);
+      if(tie&&tie!==prev.tie)addHighlight(`⚖️ Empate no pódio: ${tie.split('|').join(' × ')}`);
+    }
+    try{sessionStorage.setItem('tkf_highlight_baseline_v13',JSON.stringify({initialized:true,leader:leader?title13(leader):'',record:record?record.n:0,tie}))}catch(e){}
+    window.tkfAutoTickerHighlights=loadHighlights().filter(h=>Date.now()-Number(h.ts||0)<180000);
+  };
+
+  let lastFinalState=(readState13().torneioStatus==='finalizado');
+  function setAdminFinalLock(finished){
+    let admin=false;try{admin=new URLSearchParams(location.search).get('admin')==='1'}catch(e){}
+    if(!admin)return;
+    let banner=document.getElementById('tkf-final-admin-banner');
+    if(finished&&!banner){banner=document.createElement('div');banner.id='tkf-final-admin-banner';banner.className='tkf-final-admin-banner';banner.textContent='🏆 TORNEIO FINALIZADO • EDIÇÃO CONGELADA';document.body.appendChild(banner)}
+    if(!finished&&banner)banner.remove();
+    document.querySelectorAll('.input-name,.input-peixe,#num-peixes,#limite,.del-btn,#btn-add,#btn-reset-limite').forEach(el=>{
+      if(finished){if(!el.disabled)el.dataset.tkfFinalForced='1';el.disabled=true}
+      else if(el.dataset.tkfFinalForced==='1'){el.disabled=false;delete el.dataset.tkfFinalForced}
+    });
+    const title=document.getElementById('titulo-torneio');
+    if(title){if(finished){title.dataset.tkfOldEditable=title.contentEditable||'true';title.contentEditable='false'}else title.contentEditable=title.dataset.tkfOldEditable||'true'}
+  }
+  window.tkfApplyFinalPublic=function(st,comps){
+    const b=document.getElementById('public-official-banner');if(!b)return;
+    const finished=st?.torneioStatus==='finalizado',champ=(comps||[]).find(c=>Number(c.total||0)>0);
+    if(finished)b.innerHTML=`🏆 RESULTADO OFICIAL • TORNEIO FINALIZADO${champ?` • CAMPEÃO: <strong>${esc13(title13(champ))}</strong> — ${Number(champ.total||0).toFixed(1).replace('.',',')} cm`:''}`;
+  };
+  function handleStatusClick(){
+    setTimeout(()=>{
+      const st=readState13(),finished=st.torneioStatus==='finalizado';setAdminFinalLock(finished);
+      if(finished&&!lastFinalState){
+        try{window.tkfAutoBackup?.('Antes da finalização do torneio')}catch(e){}
+        setTimeout(()=>{try{if(typeof openSocialCard==='function'){openSocialCard();if(typeof toast==='function')toast('Resultado oficial pronto para compartilhar.')}}catch(e){}},300);
+      }
+      lastFinalState=finished;
+    },50);
+  }
+
+  function bind(){
+    document.getElementById('public-rules-btn')?.addEventListener('click',openRules);
+    document.querySelectorAll('[data-close-extra="rules"]').forEach(b=>b.addEventListener('click',closeRules));
+    document.querySelectorAll('[data-close-extra="participant"]').forEach(b=>b.addEventListener('click',closeParticipant));
+    document.getElementById('tkf-rules-modal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeRules()});
+    document.getElementById('tkf-participant-modal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeParticipant()});
+    document.addEventListener('click',e=>{const card=e.target.closest('[data-tkf-participant-index]');if(card&&document.body.classList.contains('public-standalone'))openParticipant(card.dataset.tkfParticipantIndex)});
+    document.addEventListener('keydown',e=>{
+      if((e.key==='Enter'||e.key===' ')&&e.target.closest?.('[data-tkf-participant-index]')&&document.body.classList.contains('public-standalone')){e.preventDefault();openParticipant(e.target.closest('[data-tkf-participant-index]').dataset.tkfParticipantIndex)}
+      if(e.key==='Escape'){closeRules();closeParticipant()}
+    });
+    document.querySelectorAll('.tkf-qr-kind').forEach(b=>b.addEventListener('click',()=>setQrKind(b.dataset.tkfQrKind)));
+    document.addEventListener('click',downloadCurrentQR,true);
+    document.getElementById('public-qr-btn')?.addEventListener('click',()=>setTimeout(()=>setQrKind('ranking'),0));
+    document.querySelectorAll('.status-choice').forEach(b=>b.addEventListener('click',handleStatusClick));
+    setAdminFinalLock(readState13().torneioStatus==='finalizado');
+    try{
+      if(new URLSearchParams(location.search).get('regras')==='1'){
+        const wait=setInterval(()=>{if(window.__tkfPublicState){clearInterval(wait);openRules()}},150);setTimeout(()=>clearInterval(wait),6000);
+      }
+    }catch(e){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
 })();
 </script>
 
