@@ -5359,7 +5359,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'13.0',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'13.1',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -5840,12 +5840,49 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
   }
 
   function loadHighlights(){try{return JSON.parse(sessionStorage.getItem(HIGHLIGHT_KEY)||'[]')||[]}catch(e){return[]}}
-  function saveHighlights(arr){try{sessionStorage.setItem(HIGHLIGHT_KEY,JSON.stringify(arr.slice(-5)))}catch(e){}}
-  function addHighlight(text){
-    let arr=loadHighlights().filter(h=>Date.now()-Number(h.ts||0)<180000),last=arr[arr.length-1];
-    if(!last||last.text!==text){arr.push({text,ts:Date.now()});arr=arr.slice(-5);saveHighlights(arr);window.tkfAutoTickerHighlights=arr}
+  function saveHighlights(arr){try{sessionStorage.setItem(HIGHLIGHT_KEY,JSON.stringify(arr.slice(-6)))}catch(e){}}
+
+  // Mantém apenas o destaque mais recente de cada tipo.
+  // Ex.: quando entra um novo líder, o líder anterior desaparece do ticker.
+  function setHighlight(type,text){
+    let arr=loadHighlights().filter(h=>Date.now()-Number(h.ts||0)<180000);
+
+    // Remove qualquer destaque anterior da mesma categoria.
+    arr=arr.filter(h=>h.type!==type);
+
+    if(text){
+      arr.push({type,text,ts:Date.now()});
+    }
+
+    // Ordem mais útil no ticker: líder, recorde, empate.
+    const order={leader:1,record:2,tie:3};
+    arr.sort((a,b)=>(order[a.type]||99)-(order[b.type]||99));
+
+    saveHighlights(arr);
+    window.tkfAutoTickerHighlights=arr;
   }
+
   window.tkfAutoTickerHighlights=loadHighlights().filter(h=>Date.now()-Number(h.ts||0)<180000);
+
+  // Limpa duplicações criadas pela versão anterior, mantendo só o mais novo por tipo.
+  (function normalizeStoredHighlights(){
+    const current=loadHighlights().filter(h=>Date.now()-Number(h.ts||0)<180000);
+    const byType={};
+    current.forEach(h=>{
+      let type=h.type||'';
+      if(!type){
+        if(String(h.text||'').includes('Novo líder')) type='leader';
+        else if(String(h.text||'').includes('Recorde atualizado')) type='record';
+        else if(String(h.text||'').includes('Empate no pódio')) type='tie';
+        else type='other';
+      }
+      if(!byType[type] || Number(h.ts||0)>Number(byType[type].ts||0)) byType[type]={...h,type};
+    });
+    const cleaned=Object.values(byType);
+    saveHighlights(cleaned);
+    window.tkfAutoTickerHighlights=cleaned;
+  })();
+
   window.tkfDetectAutoHighlights=function(st,comps){
     const valid=(comps||[]).filter(c=>Number(c.total||0)>0),leader=valid[0]||null,allFish=[];
     (comps||[]).forEach(c=>(c.peixes||[]).forEach(v=>{const n=Number(v)||0;if(n>0)allFish.push({n,name:title13(c)})}));
@@ -5853,9 +5890,17 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     const tie=(valid.length>=2&&Math.abs(Number(valid[0].total||0)-Number(valid[1].total||0))<.0001&&Math.abs(Number(valid[0].maior||0)-Number(valid[1].maior||0))<.0001)?`${title13(valid[0])}|${title13(valid[1])}`:'';
     let prev={};try{prev=JSON.parse(sessionStorage.getItem('tkf_highlight_baseline_v13')||'{}')||{}}catch(e){}
     if(prev.initialized){
-      if(leader&&prev.leader&&prev.leader!==title13(leader))addHighlight(`🔥 Novo líder: ${title13(leader)} — ${Number(leader.total||0).toFixed(1).replace('.',',')} cm`);
-      if(record&&Number(record.n)>Number(prev.record||0)+.0001)addHighlight(`📏 Recorde atualizado: ${Number(record.n).toFixed(1).replace('.',',')} cm — ${record.name}`);
-      if(tie&&tie!==prev.tie)addHighlight(`⚖️ Empate no pódio: ${tie.split('|').join(' × ')}`);
+      if(leader&&prev.leader&&prev.leader!==title13(leader)){
+        setHighlight('leader',`🔥 Novo líder: ${title13(leader)} — ${Number(leader.total||0).toFixed(1).replace('.',',')} cm`);
+      }
+      if(record&&Number(record.n)>Number(prev.record||0)+.0001){
+        setHighlight('record',`📏 Recorde atualizado: ${Number(record.n).toFixed(1).replace('.',',')} cm — ${record.name}`);
+      }
+      if(tie&&tie!==prev.tie){
+        setHighlight('tie',`⚖️ Empate no pódio: ${tie.split('|').join(' × ')}`);
+      }else if(!tie&&prev.tie){
+        setHighlight('tie','');
+      }
     }
     try{sessionStorage.setItem('tkf_highlight_baseline_v13',JSON.stringify({initialized:true,leader:leader?title13(leader):'',record:record?record.n:0,tie}))}catch(e){}
     window.tkfAutoTickerHighlights=loadHighlights().filter(h=>Date.now()-Number(h.ts||0)<180000);
