@@ -2014,6 +2014,71 @@ body.public-dark .tkf-news-ticker{background:#042f34 !important}
   color:#ffd15c !important;
 }
 </style>
+
+<style id="tkf-v116-notice-style">
+/* ===== v11.6 • COMUNICADO DA ORGANIZAÇÃO EM DESTAQUE ===== */
+.tkf-news-item.tkf-custom-notice{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  margin:0 10px !important;
+  padding:6px 13px !important;
+  border-radius:999px !important;
+  background:linear-gradient(90deg,#f6ad3c,#ffd36b) !important;
+  color:#17383b !important;
+  border:1px solid rgba(255,255,255,.28) !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.18) !important;
+  font-weight:950 !important;
+}
+.tkf-news-item.tkf-custom-notice strong{
+  color:#17383b !important;
+  letter-spacing:.04em !important;
+}
+.tkf-news-item.tkf-custom-notice .tkf-notice-icon{
+  width:22px !important;
+  height:22px !important;
+  border-radius:50% !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:rgba(255,255,255,.58) !important;
+  flex:0 0 auto !important;
+  font-size:13px !important;
+}
+.tkf-news-item.tkf-custom-notice .tkf-notice-tag{
+  font-size:.66rem !important;
+  font-weight:1000 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.07em !important;
+}
+.tkf-news-item.tkf-custom-notice .tkf-notice-text{
+  font-size:.72rem !important;
+  font-weight:900 !important;
+}
+body.public-dark .tkf-news-item.tkf-custom-notice{
+  background:linear-gradient(90deg,#f0a23d,#ffcf5c) !important;
+  color:#102d31 !important;
+}
+@media(max-width:700px){
+  .tkf-news-item.tkf-custom-notice{
+    padding:5px 10px !important;
+    gap:5px !important;
+    margin:0 7px !important;
+  }
+  .tkf-news-item.tkf-custom-notice .tkf-notice-icon{
+    width:19px !important;
+    height:19px !important;
+    font-size:11px !important;
+  }
+  .tkf-news-item.tkf-custom-notice .tkf-notice-tag{
+    font-size:.58rem !important;
+  }
+  .tkf-news-item.tkf-custom-notice .tkf-notice-text{
+    font-size:.66rem !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -2975,7 +3040,7 @@ body.public-dark .tkf-news-ticker{background:#042f34 !important}
           <label for="menu-ticker-notice">📢 Aviso no rodapé</label>
           <textarea id="menu-ticker-notice" rows="3" maxlength="220" placeholder="Ex.: Pesagem encerra às 15h • Premiação às 16h • Favor apresentar o peixe à organização."></textarea>
           <div style="font-size:.66rem;color:var(--muted);margin-top:5px;line-height:1.3">
-            Este aviso aparecerá na faixa de notícias antes dos destaques dos maiores peixes.
+            Este comunicado aparecerá em destaque na faixa de notícias antes dos maiores peixes.
           </div>
         </div>
 
@@ -4800,7 +4865,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'11.5',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'11.6',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -4967,7 +5032,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     const parts=[];
 
     if(notice.enabled && notice.text){
-      parts.push(`<span class="tkf-news-item tkf-custom-notice">📢 <strong>AVISO:</strong> ${esc(notice.text)}</span>`);
+      parts.push(`<span class="tkf-news-item tkf-custom-notice"><span class="tkf-notice-icon">📣</span><span class="tkf-notice-tag">COMUNICADO</span><span class="tkf-notice-text">${esc(notice.text)}</span></span>`);
     }
 
     const labels=['🥇 Maior peixe','🥈 2º maior','🥉 3º maior'];
