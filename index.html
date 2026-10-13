@@ -2152,6 +2152,76 @@ body.public-dark .tkf-news-item.tkf-custom-notice{
 }
 </style>
 
+
+<style id="tkf-v119-qr-mobile-fix">
+/* ===== v11.9 • QR MOBILE SEM CORTE ===== */
+body.tkf-qr-open #public-cloud-view::before{
+  display:none !important;
+}
+body.tkf-qr-open{
+  overflow:hidden !important;
+}
+#public-qr-modal.open{
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+.public-qr-card{
+  max-height:calc(100dvh - 28px) !important;
+  overflow:auto !important;
+  box-sizing:border-box !important;
+}
+.tkf-qr-wrap{
+  max-width:100% !important;
+}
+.tkf-qr-logo{
+  max-width:none !important;
+}
+@media(max-width:700px){
+  #public-qr-modal{
+    padding:10px !important;
+    align-items:center !important;
+  }
+  .public-qr-card{
+    width:min(94vw,330px) !important;
+    padding:14px !important;
+    border-radius:16px !important;
+    max-height:calc(100dvh - 20px) !important;
+  }
+  .public-qr-card h3{
+    font-size:1rem !important;
+    margin-bottom:4px !important;
+  }
+  .public-qr-card p{
+    font-size:.7rem !important;
+    margin-bottom:10px !important;
+  }
+  .tkf-qr-wrap{
+    width:190px !important;
+    height:190px !important;
+  }
+  .tkf-qr-wrap .public-qr-img,
+  .public-qr-img{
+    width:190px !important;
+    height:190px !important;
+    max-width:190px !important;
+    max-height:190px !important;
+    padding:5px !important;
+    box-sizing:border-box !important;
+  }
+  .tkf-qr-logo{
+    width:42px !important;
+    height:42px !important;
+    padding:3px !important;
+    border-radius:9px !important;
+  }
+  .tkf-qr-download,
+  .public-qr-close{
+    font-size:.68rem !important;
+    padding:7px 10px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -4583,7 +4653,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     if(img){
       img.src='https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=12&data='+encodeURIComponent(url);
     }
-    document.getElementById('public-qr-modal')?.classList.add('open');
+    document.getElementById('public-qr-modal')?.classList.add('open');document.body.classList.add('tkf-qr-open');
   }
   function toggleTelao(){
     const u=new URL(location.href);
@@ -4607,9 +4677,9 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     document.getElementById('public-theme-btn')?.addEventListener('click',toggleTheme);
     document.getElementById('public-share-btn')?.addEventListener('click',sharePublic);
     document.getElementById('public-qr-btn')?.addEventListener('click',openQr);
-    document.getElementById('public-qr-close')?.addEventListener('click',()=>document.getElementById('public-qr-modal')?.classList.remove('open'));
+    document.getElementById('public-qr-close')?.addEventListener('click',()=>{document.getElementById('public-qr-modal')?.classList.remove('open');document.body.classList.remove('tkf-qr-open')});
     document.getElementById('public-qr-modal')?.addEventListener('click',e=>{
-      if(e.target?.id==='public-qr-modal')e.currentTarget.classList.remove('open');
+      if(e.target?.id==='public-qr-modal'){e.currentTarget.classList.remove('open');document.body.classList.remove('tkf-qr-open')}
     });
     document.getElementById('public-telao-btn')?.addEventListener('click',toggleTelao);
     load();
@@ -4938,7 +5008,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'11.8',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'11.9',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
