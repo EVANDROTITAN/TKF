@@ -2747,7 +2747,7 @@ body.public-finished .public-official-banner{font-size:.8rem}
   <div class="table-caption tkf-admin-table-caption">
     <span id="ranking-caption">Classificação geral • desempate pelo maior peixe</span>
     <div class="tkf-admin-table-actions">
-      <button type="button" id="btn-add" class="tkf-add-participant-btn">＋ Cadastrar participante</button>
+      <button type="button" id="btn-add-top" class="tkf-add-participant-btn">＋ Cadastrar participante</button>
       <span class="count-pill" id="count-pill">👥 0 competidores</span>
     </div>
   </div>
@@ -5513,7 +5513,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'13.3',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'13.4',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -6076,7 +6076,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     let banner=document.getElementById('tkf-final-admin-banner');
     if(finished&&!banner){banner=document.createElement('div');banner.id='tkf-final-admin-banner';banner.className='tkf-final-admin-banner';banner.textContent='🏆 TORNEIO FINALIZADO • EDIÇÃO CONGELADA';document.body.appendChild(banner)}
     if(!finished&&banner)banner.remove();
-    document.querySelectorAll('.input-name,.input-peixe,#num-peixes,#limite,.del-btn,#btn-add,#btn-reset-limite').forEach(el=>{
+    document.querySelectorAll('.input-name,.input-peixe,#num-peixes,#limite,.del-btn,#btn-add,#btn-add-top,#btn-reset-limite').forEach(el=>{
       if(finished){if(!el.disabled)el.dataset.tkfFinalForced='1';el.disabled=true}
       else if(el.dataset.tkfFinalForced==='1'){el.disabled=false;delete el.dataset.tkfFinalForced}
     });
@@ -6127,26 +6127,40 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
 
 
 <script>
-/* ===== v13.3 • CADASTRAR PARTICIPANTE ===== */
+/* ===== v13.4 • CADASTRAR PARTICIPANTE • CORREÇÃO DE ID DUPLICADO ===== */
 (function(){
-  function bindAddParticipant(){
-    const btn=document.getElementById('btn-add');
+  function bindTopAddParticipant(){
+    const btn=document.getElementById('btn-add-top');
     if(!btn || btn.dataset.tkfBound==='1') return;
     btn.dataset.tkfBound='1';
 
-    btn.addEventListener('click',()=>{
-      if(typeof adicionarNovoCompetidor==='function'){
-        adicionarNovoCompetidor();
-      }else{
+    btn.addEventListener('click',(ev)=>{
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      try{
+        if(typeof openCompetitorModal==='function'){
+          openCompetitorModal(null);
+          return;
+        }
+
+        if(typeof adicionarNovoCompetidor==='function'){
+          adicionarNovoCompetidor();
+          return;
+        }
+
+        alert('O cadastro de participante não foi carregado. Recarregue a página.');
+      }catch(err){
+        console.error('Cadastro TKF:',err);
         alert('Não foi possível abrir o cadastro. Recarregue a página.');
       }
     });
   }
 
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',bindAddParticipant);
+    document.addEventListener('DOMContentLoaded',bindTopAddParticipant);
   }else{
-    bindAddParticipant();
+    bindTopAddParticipant();
   }
 })();
 </script>
