@@ -2754,7 +2754,7 @@ body.public-telao .public-title-brand{grid-template-columns:160px minmax(0,1fr) 
     qs('#limite').addEventListener('change', () => { atualizarCalculos(false); salvarTudo(); });
     qs('#btn-add').addEventListener('click', () => adicionarNovoCompetidor());
     qs('#btn-export').addEventListener('click', exportarCSV);
-    qs('#btn-print').addEventListener('click', () => window.print());
+    qs('#btn-print').addEventListener('click', () => openFinalReport());
     qs('#btn-toggle-progress').addEventListener('click', toggleProgress);
     qs('#btn-giant').addEventListener('click', toggleGiant);
     qs('#btn-summary').addEventListener('click', openSummary);
@@ -2875,7 +2875,7 @@ body.public-telao .public-title-brand{grid-template-columns:160px minmax(0,1fr) 
     </div>
     <div class="drawer-section"><div class="drawer-title">Ações</div><div class="drawer-grid">
       <button class="btn btn-secondary" data-proxy="btn-awards" type="button">🏆 Premiação</button><button class="btn btn-secondary" data-proxy="btn-history" type="button">🕘 Histórico</button>
-      <button class="btn btn-secondary" data-proxy="btn-export" type="button">📥 Exportar</button><button class="btn btn-secondary" data-proxy="btn-print" type="button">🖨️ Imprimir</button>
+      <button class="btn btn-secondary" data-proxy="btn-export" type="button">📥 Exportar</button><button class="btn btn-secondary" data-proxy="btn-print" type="button">🖨️ Imprimir relatório</button>
       <button class="btn btn-secondary" data-proxy="btn-backup" type="button">💾 Backup</button><button class="btn btn-secondary" data-proxy="btn-restore" type="button">♻️ Restaurar</button>
       <button class="btn btn-secondary" id="btn-final-report" type="button">📄 Relatório final <span class="menu-badge-new">NOVO</span></button><button class="btn btn-secondary" id="btn-public-ranking" type="button">▦ QR / Ranking público <span class="menu-badge-new">NOVO</span></button><button class="btn btn-secondary" id="btn-social-card" type="button">📲 Redes sociais <span class="menu-badge-new">NOVO</span></button><button class="btn btn-secondary" data-proxy="btn-summary" type="button">🧾 Resumo</button><button class="btn btn-secondary" data-proxy="btn-fullscreen" type="button">⛶ Tela cheia</button>
       <button class="btn btn-secondary wide" data-proxy="btn-display" type="button">🏟️ Modo Telão</button>
@@ -2911,7 +2911,7 @@ body.public-telao .public-title-brand{grid-template-columns:160px minmax(0,1fr) 
     <div class="modal-head"><h2>📲 Card para redes sociais</h2><button class="btn btn-secondary" id="btn-close-social-card" type="button">✕ Fechar</button></div>
     <div class="modal-body share-modal-grid">
       <div class="social-preview"><canvas id="social-canvas" width="2160" height="2700"></canvas></div>
-      <div class="share-card"><h3>Resultado pronto para postar</h3><p class="report-note">Agora você pode gerar o card em 3 formatos: Feed 4:5, Story/Status 9:16 e Horizontal 16:9. Todos usam as fotos dos competidores/duplas/equipes no estilo do pódio e são exportados em alta resolução.</p><div class="action-row"><button class="btn btn-secondary social-format-btn" data-format="feed" type="button">🖼️ Feed 4:5</button><button class="btn btn-secondary social-format-btn" data-format="story" type="button">📱 Story 9:16</button><button class="btn btn-secondary social-format-btn" data-format="wide" type="button">🖥️ Horizontal 16:9</button></div><div class="report-note" id="social-format-note">Formato atual: Feed 4:5 (1080×1350), ideal para Instagram/Facebook/WhatsApp. Exportação em 4x para máxima nitidez.</div><div class="action-row"><button class="btn btn-primary" id="btn-download-social" type="button">⬇ Baixar imagem</button><button class="btn btn-secondary" id="btn-native-share" type="button">📤 Compartilhar imagem</button><button class="btn btn-secondary" id="btn-whatsapp-share" type="button">🟢 WhatsApp</button><button class="btn btn-secondary" id="btn-copy-caption" type="button">📋 Copiar legenda</button></div><p class="report-note">No celular compatível, o WhatsApp/Compartilhar tenta enviar a imagem pronta. No computador, a imagem é baixada em PNG e a legenda é copiada/aberta no WhatsApp Web, porque o navegador não permite anexar o arquivo automaticamente. Atenção: o WhatsApp ainda aplica a própria compressão, mas esta versão exporta em 4x e com fotos maiores para reduzir essa perda.</p></div>
+      <div class="share-card"><h3>Resultado atualizado para postar</h3><p class="report-note">O card agora usa logo, status, data, horários, local e classificação atuais. Agora você pode gerar o card em 3 formatos: Feed 4:5, Story/Status 9:16 e Horizontal 16:9. Todos usam as fotos dos competidores/duplas/equipes no estilo do pódio e são exportados em alta resolução.</p><div class="action-row"><button class="btn btn-secondary social-format-btn" data-format="feed" type="button">🖼️ Feed 4:5</button><button class="btn btn-secondary social-format-btn" data-format="story" type="button">📱 Story 9:16</button><button class="btn btn-secondary social-format-btn" data-format="wide" type="button">🖥️ Horizontal 16:9</button></div><div class="report-note" id="social-format-note">Formato atual: Feed 4:5 (1080×1350), ideal para Instagram/Facebook/WhatsApp. Exportação em 4x para máxima nitidez.</div><div class="action-row"><button class="btn btn-primary" id="btn-download-social" type="button">⬇ Baixar imagem</button><button class="btn btn-secondary" id="btn-native-share" type="button">📤 Compartilhar imagem</button><button class="btn btn-secondary" id="btn-whatsapp-share" type="button">🟢 WhatsApp</button><button class="btn btn-secondary" id="btn-copy-caption" type="button">📋 Copiar legenda</button></div><p class="report-note">No celular compatível, o WhatsApp/Compartilhar tenta enviar a imagem pronta. No computador, a imagem é baixada em PNG e a legenda é copiada/aberta no WhatsApp Web, porque o navegador não permite anexar o arquivo automaticamente. Atenção: o WhatsApp ainda aplica a própria compressão, mas esta versão exporta em 4x e com fotos maiores para reduzir essa perda.</p></div>
     </div>
   </div>
 </div>
@@ -3146,9 +3146,49 @@ function finalReportHTML(){
   const data=getRankedParticipationData(), top=data.slice(0,3);
   const record=Math.max(...data.flatMap(d=>d.peixes),0), captures=data.flatMap(d=>d.peixes).filter(x=>x>0);
   const avg=captures.length?captures.reduce((a,b)=>a+b,0)/captures.length:0;
-  const topCard=(d,i)=>{ if(!d)return ''; const img=d.foto||placeholderSvg(participationTitle(d)); return `<div class="report-podium ${i===0?'first':''}"><div style="font-weight:900">${['🥇 1º','🥈 2º','🥉 3º'][i]}</div><img class="report-avatar" src="${escapeAttr(img)}"><div style="font-size:16px;font-weight:950;margin-top:7px">${escapeHtml(participationTitle(d))}</div>${d.modalidade!=='solo'?`<div style="font-size:10px;color:#657a7d;margin-top:3px">${escapeHtml(participationPeople(d))}</div>`:''}<div style="font-size:20px;font-weight:950;color:#d77819;margin-top:6px">${d.total.toFixed(1)} cm</div><div style="font-size:10px;color:#657a7d">Maior: ${d.maior.toFixed(1)} cm</div></div>`};
+  let st={};
+  try{st=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}}catch(e){}
+  const statusMap={nao_iniciado:'⚪ NÃO INICIADO',ao_vivo:'🟢 AO VIVO',finalizado:'🏆 FINALIZADO'};
+  const status=statusMap[st.torneioStatus]||statusMap.nao_iniciado;
+  const fmtDate=v=>{if(!v)return 'Não definida';const p=String(v).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:v};
+  const horario=(st.horaAbertura||st.horaFechamento)?`${st.horaAbertura||'--:--'} às ${st.horaFechamento||'--:--'}`:'Não definido';
+  const logo=qs('.tkf-header-logo')?.src||qs('.public-title-logo')?.src||'';
+
+  const topCard=(d,i)=>{
+    if(!d)return '';
+    const img=d.foto||placeholderSvg(participationTitle(d));
+    return `<div class="report-podium ${i===0?'first':''}">
+      <div style="font-weight:900">${['🥇 1º','🥈 2º','🥉 3º'][i]}</div>
+      <img class="report-avatar" src="${escapeAttr(img)}">
+      <div style="font-size:16px;font-weight:950;margin-top:7px">${escapeHtml(participationTitle(d))}</div>
+      ${d.modalidade!=='solo'?`<div style="font-size:10px;color:#657a7d;margin-top:3px">${escapeHtml(participationPeople(d))}</div>`:''}
+      <div style="font-size:20px;font-weight:950;color:#d77819;margin-top:6px">${d.total.toFixed(1)} cm</div>
+      <div style="font-size:10px;color:#657a7d">Maior: ${d.maior.toFixed(1)} cm</div>
+    </div>`;
+  };
   const rows=data.map((d,i)=>`<tr><td><b>${i+1}º</b></td><td><b>${escapeHtml(participationTitle(d))}</b>${d.modalidade!=='solo'?`<br><span style="color:#657a7d;font-size:10px">${escapeHtml(participationPeople(d))}</span>`:''}</td><td>${escapeHtml(({solo:'Solo',dupla:'Dupla',equipe:'Equipe'}[d.modalidade]||'Solo'))}</td><td><b>${d.total.toFixed(1)}</b></td><td>${d.maior.toFixed(1)}</td><td>${d.peixes.map(x=>x?x.toFixed(1):'-').join(' • ')}</td></tr>`).join('');
-  return `<header><h1 class="report-title">${escapeHtml(title)}</h1><div class="report-sub">RELATÓRIO FINAL DE CLASSIFICAÇÃO • ${new Date().toLocaleString('pt-BR')}</div><div class="report-badges"><span class="report-badge">👥 ${data.length} participações</span><span class="report-badge">🎣 ${captures.length} capturas</span><span class="report-badge">🏆 Recorde ${record.toFixed(1)} cm</span><span class="report-badge">📊 Média ${avg.toFixed(1)} cm</span></div></header><section class="report-hero">${top.map(topCard).join('')}</section><div class="report-table-wrap"><table class="report-table"><thead><tr><th>Pos.</th><th>Participação</th><th>Formato</th><th>Total (cm)</th><th>Maior</th><th>Peixes</th></tr></thead><tbody>${rows}</tbody></table></div><footer style="margin-top:20px;font-size:10px;color:#718486;border-top:1px solid #dce7e5;padding-top:8px">Relatório gerado pelo Placar Oficial do Torneio.</footer>`;
+
+  return `<header>
+    <div style="display:flex;align-items:center;justify-content:center;gap:18px;text-align:center">
+      ${logo?`<img src="${escapeAttr(logo)}" style="width:110px;height:90px;object-fit:contain">`:''}
+      <div><h1 class="report-title">${escapeHtml(title)}</h1><div class="report-sub">${st.torneioStatus==='finalizado'?'RESULTADO OFICIAL':'RELATÓRIO DE CLASSIFICAÇÃO'}</div></div>
+    </div>
+    <div class="report-badges" style="justify-content:center">
+      <span class="report-badge">${status}</span>
+      <span class="report-badge">📅 ${escapeHtml(fmtDate(st.dataTorneio))}</span>
+      <span class="report-badge">🕒 ${escapeHtml(horario)}</span>
+      <span class="report-badge">📍 ${escapeHtml(st.localTorneio||'Local não definido')}</span>
+    </div>
+    <div class="report-badges" style="justify-content:center;margin-top:8px">
+      <span class="report-badge">👥 ${data.length} participações</span>
+      <span class="report-badge">🎣 ${captures.length} capturas</span>
+      <span class="report-badge">🏆 Recorde ${record.toFixed(1)} cm</span>
+      <span class="report-badge">📊 Média ${avg.toFixed(1)} cm</span>
+    </div>
+  </header>
+  <section class="report-hero">${top.map(topCard).join('')}</section>
+  <div class="report-table-wrap"><table class="report-table"><thead><tr><th>Pos.</th><th>Participação</th><th>Formato</th><th>Total (cm)</th><th>Maior</th><th>Peixes</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <footer style="margin-top:20px;font-size:10px;color:#718486;border-top:1px solid #dce7e5;padding-top:8px;text-align:center">Placar Oficial TKF • Relatório gerado em ${new Date().toLocaleString('pt-BR')}</footer>`;
 }
 function openFinalReport(){
   try{
@@ -3224,19 +3264,58 @@ let currentSocialFormat='feed';
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h);ctx.fill()}
 function shortCanvas(t,n){t=String(t||'');return t.length>n?t.slice(0,n-1)+'…':t}
 function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines){const words=String(text).split(/\s+/);let line='',lines=[];for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);lines=lines.slice(0,maxLines);lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight))}
-function socialCaption(){const title=(qs('#titulo-torneio')?.innerText||'Torneio de Pesca').trim(),data=getRankedParticipationData().slice(0,3),u=localStorage.getItem(PUBLIC_URL_KEY)||'';const lines=data.map((d,i)=>`${i+1}º ${participationTitle(d)} — ${d.total.toFixed(1)} cm`);return `🏆 ${title}\n\n${lines.join('\n')}${u?'\n\nRanking ao vivo: '+u:''}`}
+function socialCaption(){
+  const title=(qs('#titulo-torneio')?.innerText||'Torneio de Pesca').trim(),data=getRankedParticipationData().slice(0,3),u=localStorage.getItem(PUBLIC_URL_KEY)||'',meta=currentTournamentMeta();
+  const lines=data.map((d,i)=>`${i+1}º ${participationTitle(d)} — ${d.total.toFixed(1)} cm`);
+  const details=[];if(meta.date)details.push('📅 '+meta.date);if(meta.open||meta.close)details.push('🕒 '+(meta.open||'--:--')+' às '+(meta.close||'--:--'));if(meta.location)details.push('📍 '+meta.location);
+  return `🏆 ${title}\n${meta.rawStatus==='finalizado'?'RESULTADO OFICIAL':'CLASSIFICAÇÃO '+meta.status}\n\n${details.join(' • ')}\n\n${lines.join('\n')}${u?'\n\nRanking: '+u:''}`.trim();
+}
 function loadImage(src){return new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src})}
 function fitText(ctx,text,maxWidth,maxFont,minFont,weight='900'){let size=maxFont;while(size>minFont){ctx.font=`${weight} ${size}px Segoe UI,Arial`;if(ctx.measureText(text).width<=maxWidth)break;size-=2}return size}
 function circleImage(ctx,img,cx,cy,size,border='#ffffff',borderW=6){ctx.save();ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=18;ctx.shadowOffsetY=8;ctx.beginPath();ctx.arc(cx,cy,size/2,0,Math.PI*2);ctx.closePath();ctx.clip();if(img){const scale=Math.max(size/img.width,size/img.height);const dw=img.width*scale,dh=img.height*scale;const dx=cx-dw/2,dy=cy-dh/2;ctx.drawImage(img,dx,dy,dw,dh)}else{const g=ctx.createLinearGradient(cx-size/2,cy-size/2,cx+size/2,cy+size/2);g.addColorStop(0,'#f0a93b');g.addColorStop(1,'#815117');ctx.fillStyle=g;ctx.fillRect(cx-size/2,cy-size/2,size,size)}ctx.restore();ctx.shadowColor='transparent';ctx.strokeStyle=border;ctx.lineWidth=borderW;ctx.beginPath();ctx.arc(cx,cy,size/2-borderW/2,0,Math.PI*2);ctx.stroke()}
 function getSocialFormat(){return SOCIAL_FORMATS[currentSocialFormat]||SOCIAL_FORMATS.feed}
 function updateSocialFormatUI(){const fmt=getSocialFormat();qs('#social-format-note').textContent=fmt.desc;document.querySelectorAll('.social-format-btn').forEach(btn=>{btn.classList.toggle('btn-primary',btn.dataset.format===fmt.key);btn.classList.toggle('btn-secondary',btn.dataset.format!==fmt.key)})}
+function currentTournamentMeta(){
+  let st={};try{st=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}}catch(e){}
+  const fmtDate=v=>{if(!v)return '';const p=String(v).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:v};
+  const statusMap={nao_iniciado:'NÃO INICIADO',ao_vivo:'AO VIVO',finalizado:'RESULTADO OFICIAL'};
+  return {status:statusMap[st.torneioStatus]||'NÃO INICIADO',rawStatus:st.torneioStatus||'nao_iniciado',date:fmtDate(st.dataTorneio),open:st.horaAbertura||'',close:st.horaFechamento||'',location:st.localTorneio||''};
+}
+function loadCanvasBrandImage(src){return new Promise(resolve=>{if(!src)return resolve(null);const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src})}
 function setupSocialCanvas(){const fmt=getSocialFormat(),c=qs('#social-canvas'),ctx=c.getContext('2d');c.width=fmt.w*SOCIAL_EXPORT_SCALE;c.height=fmt.h*SOCIAL_EXPORT_SCALE;ctx.setTransform(SOCIAL_EXPORT_SCALE,0,0,SOCIAL_EXPORT_SCALE,0,0);ctx.clearRect(0,0,fmt.w,fmt.h);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';const g=ctx.createLinearGradient(0,0,fmt.w,fmt.h);g.addColorStop(0,'#06272b');g.addColorStop(1,'#0b555b');ctx.fillStyle=g;ctx.fillRect(0,0,fmt.w,fmt.h);ctx.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<24;i++){ctx.beginPath();ctx.arc(60+i*(fmt.w/22),78+(i%4)*14,2.5,0,Math.PI*2);ctx.fill()}return {c,ctx,fmt}}
-function drawHeader(ctx,fmt,title){ctx.textAlign='center';ctx.fillStyle='#8fe9df';ctx.font=`700 ${fmt.key==='wide'?24:28}px Segoe UI,Arial`;ctx.fillText('CLASSIFICAÇÃO OFICIAL',fmt.w/2,fmt.key==='story'?88:90);ctx.fillStyle='#fff';ctx.font=`900 ${fmt.key==='wide'?52:56}px Segoe UI,Arial`;wrapCanvasText(ctx,title.toUpperCase(),fmt.w/2,fmt.key==='story'?155:160,fmt.w-160,fmt.key==='wide'?56:62,2);ctx.fillStyle='#f4a340';ctx.font=`900 ${fmt.key==='wide'?26:28}px Segoe UI,Arial`;ctx.fillText(fmt.key==='wide'?'TOP 3 DO TORNEIO':'PÓDIO DO TORNEIO',fmt.w/2,fmt.key==='story'?245:fmt.key==='wide'?210:275)}
+async function drawHeader(ctx,fmt,title){
+  const meta=currentTournamentMeta();
+  const logo=await loadCanvasBrandImage(qs('.tkf-header-logo')?.src||qs('.public-title-logo')?.src||'');
+  ctx.textAlign='center';
+  if(logo){
+    const maxW=fmt.key==='wide'?110:135,maxH=fmt.key==='wide'?90:110;
+    const scale=Math.min(maxW/logo.width,maxH/logo.height),w=logo.width*scale,h=logo.height*scale;
+    ctx.drawImage(logo,(fmt.w-w)/2,fmt.key==='story'?28:24,w,h);
+  }
+  const y=logo?(fmt.key==='story'?150:138):(fmt.key==='story'?88:90);
+  ctx.fillStyle=meta.rawStatus==='finalizado'?'#f4c542':'#8fe9df';
+  ctx.font=`800 ${fmt.key==='wide'?22:26}px Segoe UI,Arial`;ctx.fillText(meta.status,fmt.w/2,y);
+  ctx.fillStyle='#fff';ctx.font=`900 ${fmt.key==='wide'?48:54}px Segoe UI,Arial`;
+  wrapCanvasText(ctx,title.toUpperCase(),fmt.w/2,y+62,fmt.w-150,fmt.key==='wide'?52:60,2);
+  const bits=[];if(meta.date)bits.push('📅 '+meta.date);if(meta.open||meta.close)bits.push('🕒 '+(meta.open||'--:--')+' – '+(meta.close||'--:--'));if(meta.location)bits.push('📍 '+meta.location);
+  if(bits.length){ctx.fillStyle='#d7ece8';ctx.font=`700 ${fmt.key==='wide'?19:22}px Segoe UI Emoji,Segoe UI,Arial`;ctx.fillText(bits.join('   •   '),fmt.w/2,y+(fmt.key==='wide'?115:130))}
+  ctx.fillStyle='#f4a340';ctx.font=`900 ${fmt.key==='wide'?24:27}px Segoe UI,Arial`;ctx.fillText(meta.rawStatus==='finalizado'?'PÓDIO FINAL':'PÓDIO DO TORNEIO',fmt.w/2,y+(fmt.key==='wide'?153:178));
+}
 async function renderFeedCard(ctx,fmt,top){const medals=['🥇','🥈','🥉'];if(top[0]){const d=top[0],L={x:52,y:305,w:976,h:385,photo:270};ctx.fillStyle='rgba(244,163,64,.20)';roundRect(ctx,L.x,L.y,L.w,L.h,34);const img=await loadImage(d.foto||placeholderSvg(participationTitle(d)||'—'));circleImage(ctx,img,L.x+L.photo/2+58,L.y+L.h/2,L.photo,'#ffe1a8',10);ctx.textAlign='left';ctx.fillStyle='#f9d489';ctx.font='900 34px Segoe UI Emoji,Segoe UI,Arial';ctx.fillText('🏆 CAMPEÃO',L.x+355,L.y+72);ctx.fillStyle='#fff';ctx.font='900 34px Segoe UI Emoji,Segoe UI,Arial';ctx.fillText(medals[0]+'  1º lugar',L.x+355,L.y+112);const titleSize=fitText(ctx,shortCanvas(participationTitle(d),28),L.w-560,56,28,'900');ctx.font=`900 ${titleSize}px Segoe UI,Arial`;ctx.fillText(shortCanvas(participationTitle(d),28),L.x+355,L.y+182);const subtitle=d.modalidade!=='solo'?shortCanvas(participationPeople(d),52):(({solo:'Participação solo',dupla:'Dupla',equipe:'Equipe'}[d.modalidade])||'Participação solo');ctx.fillStyle='#d7ece8';ctx.font='700 24px Segoe UI,Arial';wrapCanvasText(ctx,subtitle,L.x+355,L.y+228,L.w-560,30,2);ctx.fillStyle='#f4a340';ctx.font='900 68px Segoe UI,Arial';ctx.fillText(d.total.toFixed(1)+' cm',L.x+355,L.y+322);ctx.fillStyle='#ffffff';ctx.font='800 24px Segoe UI,Arial';ctx.fillText('Maior peixe: '+d.maior.toFixed(1)+' cm',L.x+355,L.y+356)}const smalls=[top[1],top[2]];const positions=[{x:58,y:735,w:454,h:305,photo:176,label:'2º lugar',medal:medals[1]},{x:568,y:735,w:454,h:305,photo:176,label:'3º lugar',medal:medals[2]}];for(let k=0;k<2;k++){const d=smalls[k];if(!d)continue;const L=positions[k];ctx.fillStyle='rgba(255,255,255,.08)';roundRect(ctx,L.x,L.y,L.w,L.h,28);const img=await loadImage(d.foto||placeholderSvg(participationTitle(d)||'—'));circleImage(ctx,img,L.x+L.w/2,L.y+84,L.photo,'#ffffff',8);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 28px Segoe UI Emoji,Segoe UI,Arial';ctx.fillText(L.medal+'  '+L.label,L.x+L.w/2,L.y+190);const titleSize=fitText(ctx,shortCanvas(participationTitle(d),24),L.w-50,40,22,'900');ctx.font=`900 ${titleSize}px Segoe UI,Arial`;wrapCanvasText(ctx,shortCanvas(participationTitle(d),24),L.x+L.w/2,L.y+232,L.w-50,34,2);const subtitle=d.modalidade!=='solo'?shortCanvas(participationPeople(d),36):(({solo:'Participação solo',dupla:'Dupla',equipe:'Equipe'}[d.modalidade])||'Participação solo');ctx.fillStyle='#c8dddd';ctx.font='700 18px Segoe UI,Arial';wrapCanvasText(ctx,subtitle,L.x+L.w/2,L.y+262,L.w-54,22,2);ctx.fillStyle='#f4a340';ctx.font='900 42px Segoe UI,Arial';ctx.fillText(d.total.toFixed(1)+' cm',L.x+L.w/2,L.y+292)}}
 async function renderStoryCard(ctx,fmt,top){const layouts=[{x:52,y:278,w:976,h:405,photo:245},{x:72,y:720,w:936,h:330,photo:192},{x:72,y:1080,w:936,h:330,photo:192}], medals=['🥇','🥈','🥉'];for(let i=0;i<Math.min(3,top.length);i++){const d=top[i],L=layouts[i];ctx.fillStyle=i===0?'rgba(244,163,64,.18)':'rgba(255,255,255,.08)';roundRect(ctx,L.x,L.y,L.w,L.h,34);const img=await loadImage(d.foto||placeholderSvg(participationTitle(d)||'—'));circleImage(ctx,img,L.x+L.photo/2+54,L.y+L.h/2,L.photo,i===0?'#ffe1a8':'#ffffff',9);ctx.textAlign='left';ctx.fillStyle='#fff';ctx.font='900 40px Segoe UI Emoji,Segoe UI,Arial';ctx.fillText(medals[i]+'  '+(i+1)+'º lugar',L.x+335,L.y+84);const titleSize=fitText(ctx,shortCanvas(participationTitle(d),28),L.w-530,i===0?52:46,28,'900');ctx.font=`900 ${titleSize}px Segoe UI,Arial`;ctx.fillText(shortCanvas(participationTitle(d),28),L.x+335,L.y+156);const subtitle=d.modalidade!=='solo'?shortCanvas(participationPeople(d),54):(({solo:'Participação solo',dupla:'Dupla',equipe:'Equipe'}[d.modalidade])||'Participação solo');ctx.fillStyle='#b8d6d3';ctx.font='700 24px Segoe UI,Arial';wrapCanvasText(ctx,subtitle,L.x+335,L.y+208,L.w-530,30,2);ctx.fillStyle='#f4a340';ctx.font='900 62px Segoe UI,Arial';ctx.fillText(d.total.toFixed(1)+' cm',L.x+335,L.y+300);ctx.textAlign='left';ctx.fillStyle='#ffffff';ctx.font='800 24px Segoe UI,Arial';ctx.fillText('Maior peixe: '+d.maior.toFixed(1)+' cm',L.x+335,L.y+350)}}
 async function renderWideCard(ctx,fmt,top){const cols=[{x:45,y:240,w:610,h:640,photo:240},{x:655,y:240,w:610,h:640,photo:210},{x:1265,y:240,w:610,h:640,photo:210}], medals=['🥇','🥈','🥉'];for(let i=0;i<Math.min(3,top.length);i++){const d=top[i],L=cols[i];ctx.fillStyle=i===0?'rgba(244,163,64,.18)':'rgba(255,255,255,.08)';roundRect(ctx,L.x,L.y,L.w,L.h,30);const img=await loadImage(d.foto||placeholderSvg(participationTitle(d)||'—'));circleImage(ctx,img,L.x+L.w/2,L.y+162,L.photo,i===0?'#ffe1a8':'#ffffff',8);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 30px Segoe UI Emoji,Segoe UI,Arial';ctx.fillText(medals[i]+'  '+(i+1)+'º lugar',L.x+L.w/2,L.y+305);const titleSize=fitText(ctx,shortCanvas(participationTitle(d),26),L.w-74,i===0?42:40,24,'900');ctx.font=`900 ${titleSize}px Segoe UI,Arial`;wrapCanvasText(ctx,shortCanvas(participationTitle(d),26),L.x+L.w/2,L.y+365,L.w-74,42,2);const subtitle=d.modalidade!=='solo'?shortCanvas(participationPeople(d),42):(({solo:'Participação solo',dupla:'Dupla',equipe:'Equipe'}[d.modalidade])||'Participação solo');ctx.fillStyle='#b8d6d3';ctx.font='700 22px Segoe UI,Arial';wrapCanvasText(ctx,subtitle,L.x+L.w/2,L.y+438,L.w-84,28,2);ctx.fillStyle='#f4a340';ctx.font='900 50px Segoe UI,Arial';ctx.fillText(d.total.toFixed(1)+' cm',L.x+L.w/2,L.y+532);ctx.fillStyle='#ffffff';ctx.font='800 22px Segoe UI,Arial';ctx.fillText('Maior peixe: '+d.maior.toFixed(1)+' cm',L.x+L.w/2,L.y+584)}}
 function drawSocialFooter(ctx,fmt){ctx.textAlign='center';ctx.fillStyle='#b8d6d3';ctx.font=`700 ${fmt.key==='wide'?20:22}px Segoe UI,Arial`;ctx.fillText('Atualizado em '+new Date().toLocaleString('pt-BR'),fmt.w/2,fmt.h-(fmt.key==='story'?100:fmt.key==='wide'?60:110));const u=localStorage.getItem(PUBLIC_URL_KEY)||'';if(u){ctx.fillStyle='#fff';ctx.font=`800 ${fmt.key==='wide'?20:22}px Segoe UI,Arial`;ctx.fillText('Acompanhe o ranking ao vivo pelo link/QR Code',fmt.w/2,fmt.h-(fmt.key==='story'?56:fmt.key==='wide'?30:65))}}
-async function drawSocialCard(){const {ctx,fmt}=setupSocialCanvas(),data=getRankedParticipationData(),top=data.slice(0,3),title=(qs('#titulo-torneio')?.innerText||'Torneio de Pesca').trim();drawHeader(ctx,fmt,title);if(!top.length){ctx.fillStyle='rgba(255,255,255,.08)';roundRect(ctx,80,fmt.h*.33,fmt.w-160,320,30);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='800 38px Segoe UI,Arial';ctx.fillText('Aguardando resultados',fmt.w/2,fmt.h*.48)}else if(fmt.key==='story'){await renderStoryCard(ctx,fmt,top)}else if(fmt.key==='wide'){await renderWideCard(ctx,fmt,top)}else{await renderFeedCard(ctx,fmt,top)}drawSocialFooter(ctx,fmt)}
+async function drawSocialCard(){
+  const {ctx,fmt}=setupSocialCanvas(),data=getRankedParticipationData(),top=data.slice(0,3),title=(qs('#titulo-torneio')?.innerText||'Torneio de Pesca').trim();
+  await drawHeader(ctx,fmt,title);
+  const shift=fmt.key==='story'?115:(fmt.key==='wide'?65:95);
+  ctx.save();ctx.translate(0,shift);
+  if(!top.length){ctx.fillStyle='rgba(255,255,255,.08)';roundRect(ctx,80,fmt.h*.33,fmt.w-160,320,30);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='800 38px Segoe UI,Arial';ctx.fillText('Aguardando resultados',fmt.w/2,fmt.h*.48)}
+  else if(fmt.key==='story'){await renderStoryCard(ctx,fmt,top)}
+  else if(fmt.key==='wide'){await renderWideCard(ctx,fmt,top)}
+  else{await renderFeedCard(ctx,fmt,top)}
+  ctx.restore();drawSocialFooter(ctx,fmt);
+}
 function openSocialCard(){updateSocialFormatUI();drawSocialCard();qs('#social-card-modal').style.display='block'}
 function canvasBlob(){return new Promise(r=>qs('#social-canvas').toBlob(r,'image/png',.95))}
 async function downloadSocialCard(){await drawSocialCard();const b=await canvasBlob();if(!b)return;const fmt=getSocialFormat();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=safeFileName((qs('#titulo-torneio')?.innerText||'torneio')+'_top3_'+fmt.file)+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Card salvo em PNG em alta resolução.')}
