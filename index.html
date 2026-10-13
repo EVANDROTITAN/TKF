@@ -3614,8 +3614,8 @@ body.public-finished .public-official-banner{font-size:.8rem}
     <div class="modal-body">
       <div class="photo-picker">
         <img id="competitor-photo-preview" class="photo-preview" alt="Prévia da foto" />
-        <div><div class="photo-actions"><button class="btn btn-secondary" id="btn-pick-photo" type="button">📷 Escolher foto</button><button class="btn btn-secondary" id="btn-remove-photo" type="button">Remover foto</button></div><div class="photo-note">A imagem é otimizada para funcionar offline, mas agora com qualidade bem maior para aparecer melhor no pódio e nos cards sociais.</div></div>
-        <input id="competitor-photo-file" type="file" accept="image/*" capture="environment" style="display:none" />
+        <div><div class="photo-actions"><button class="btn btn-secondary" id="btn-pick-photo" type="button">🖼️ Escolher foto</button><button class="btn btn-secondary" id="btn-remove-photo" type="button">Remover foto</button></div><div class="photo-note">Você pode escolher uma imagem da galeria do celular. A foto é otimizada para aparecer bem no pódio e nos cards sociais.</div></div>
+        <input id="competitor-photo-file" type="file" accept="image/*" style="display:none" />
       </div>
       <div class="form-grid" style="margin-top:14px">
         <div class="form-field full"><label id="reg-name-label">Nome do competidor</label><input id="reg-name" maxlength="80" placeholder="Nome completo" /></div>
@@ -5546,7 +5546,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'13.6',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'13.7',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
