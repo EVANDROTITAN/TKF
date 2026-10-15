@@ -4530,6 +4530,8 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     setCloudStatus('Alteração detectada • sincronizando...');
     timer=setTimeout(()=>sendNow(false),500);
   }
+  window.tkfScheduleCloudSend = scheduleSend;
+  window.tkfSendCloudNow = function(){ return sendNow(false); };
 
   // v8.5: qualquer gravação do estado principal no localStorage dispara sincronização.
   // Isso cobre medidas, título, quantidade de peixes, limite e demais configurações
@@ -5546,10 +5548,10 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'13.8',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'13.9',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
-      try{scheduleSend?.()}catch(e){}
+      try{window.tkfScheduleCloudSend?.()}catch(e){}
     };
   }
 
@@ -6326,6 +6328,216 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
   }else{
     install();
   }
+})();
+</script>
+
+
+<script>
+/* ===== v13.9 • CADASTRO/PÓDIO/SYNC + CONTROLE DE ARMAZENAMENTO ===== */
+(function(){
+  const MAIN_KEY='pescaUltra2025_tablet';
+  const AUTO_KEY='tkf_auto_backups_v11';
+  const MIGRATION_KEY='tkf_storage_fix_v139';
+
+  function getMainKey(){
+    try{return (typeof STORAGE_KEY!=='undefined'&&STORAGE_KEY)||MAIN_KEY}catch(e){return MAIN_KEY}
+  }
+
+  function readState(){
+    try{return JSON.parse(localStorage.getItem(getMainKey())||'{}')||{}}catch(e){return {}}
+  }
+
+  function identity(c){
+    return String(c?.numero||c?.grupo||c?.nome||'').trim().toLowerCase();
+  }
+
+  function compactStateForAutoBackup(raw){
+    try{
+      const st=typeof raw==='string'?JSON.parse(raw):raw;
+      if(!st||typeof st!=='object')return typeof raw==='string'?raw:JSON.stringify(raw||{});
+      const copy={...st};
+      if(Array.isArray(copy.competidores)){
+        copy.competidores=copy.competidores.map(c=>({...c,foto:''}));
+      }
+      return JSON.stringify(copy);
+    }catch(e){
+      return typeof raw==='string'?raw:'{}';
+    }
+  }
+
+  function compactExistingBackups(){
+    try{
+      const arr=JSON.parse(localStorage.getItem(AUTO_KEY)||'[]');
+      if(!Array.isArray(arr)||!arr.length)return;
+      const compact=arr.slice(0,5).map(b=>({
+        ts:b.ts,
+        reason:b.reason,
+        data:compactStateForAutoBackup(b.data)
+      }));
+      localStorage.setItem(AUTO_KEY,JSON.stringify(compact));
+    }catch(e){
+      try{localStorage.removeItem(AUTO_KEY)}catch(_){}
+    }
+  }
+
+  function freeSpace(){
+    try{compactExistingBackups()}catch(e){}
+    try{
+      const arr=JSON.parse(localStorage.getItem(AUTO_KEY)||'[]');
+      if(Array.isArray(arr)&&arr.length>3){
+        localStorage.setItem(AUTO_KEY,JSON.stringify(arr.slice(0,3)));
+      }
+    }catch(e){}
+  }
+
+  function buildStateFromDom(){
+    const prev=readState();
+    const rows=[...document.querySelectorAll('#tabela-corpo tr')];
+    const comps=rows.map(row=>{
+      let profile={nome:row.querySelector('.input-name')?.value||''};
+      try{if(typeof rowProfile==='function')profile=rowProfile(row)}catch(e){}
+      return {
+        ...profile,
+        peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)
+      };
+    });
+    return {
+      ...prev,
+      version:'13.9',
+      titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),
+      qtd:(typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||3)),
+      limite:(typeof getLimite==='function'?getLimite():(prev.limite||300)),
+      tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',
+      competidores:comps
+    };
+  }
+
+  function persistState(showError=true){
+    const next=buildStateFromDom();
+    const payload=JSON.stringify(next);
+    let ok=false;
+    try{
+      localStorage.setItem(getMainKey(),payload);
+      ok=true;
+    }catch(err){
+      // Fotos + backups antigos podem ultrapassar a cota do navegador.
+      freeSpace();
+      try{
+        localStorage.setItem(getMainKey(),payload);
+        ok=true;
+      }catch(err2){
+        console.error('TKF armazenamento cheio:',err2);
+        if(showError){
+          alert('O navegador ficou sem espaço para salvar. Os backups automáticos antigos foram compactados. Tente salvar novamente; para novos participantes, as fotos agora serão mais leves.');
+        }
+      }
+    }
+    if(ok){
+      try{typeof atualizarEstadoSalvo==='function'&&atualizarEstadoSalvo()}catch(e){}
+      try{window.tkfScheduleCloudSend?.()}catch(e){}
+    }
+    return ok;
+  }
+
+  function installRobustSaver(){
+    try{window.salvarTudo=persistState}catch(e){}
+    try{salvarTudo=persistState}catch(e){}
+  }
+
+  function installLightAutoBackup(){
+    window.tkfAutoBackup=function(reason='Backup automático'){
+      const raw=localStorage.getItem(getMainKey());
+      if(!raw)return;
+      const data=compactStateForAutoBackup(raw);
+      let arr=[];
+      try{arr=JSON.parse(localStorage.getItem(AUTO_KEY)||'[]')}catch(e){}
+      if(arr[0]?.data===data && Date.now()-Number(arr[0]?.ts||0)<5000)return;
+      arr.unshift({ts:Date.now(),reason,data});
+      arr=arr.slice(0,5);
+      try{localStorage.setItem(AUTO_KEY,JSON.stringify(arr))}
+      catch(e){
+        try{localStorage.removeItem(AUTO_KEY);localStorage.setItem(AUTO_KEY,JSON.stringify(arr.slice(0,2)))}catch(_){}
+      }
+    };
+  }
+
+  function installPhotoCompression(){
+    // 520 px em WebP mantém ótima aparência em avatar/pódio e reduz muito o uso de localStorage.
+    window.compressImage = function(file){
+      return new Promise((resolve,reject)=>{
+        const r=new FileReader();
+        r.onload=()=>{
+          const img=new Image();
+          img.onload=()=>{
+            const max=520;
+            const scale=Math.min(1,max/Math.max(img.width,img.height));
+            const w=Math.max(1,Math.round(img.width*scale));
+            const h=Math.max(1,Math.round(img.height*scale));
+            const c=document.createElement('canvas');
+            c.width=w;c.height=h;
+            const cx=c.getContext('2d');
+            cx.imageSmoothingEnabled=true;
+            cx.imageSmoothingQuality='high';
+            cx.drawImage(img,0,0,w,h);
+            let out=c.toDataURL('image/webp',0.78);
+            if(!out.startsWith('data:image/webp'))out=c.toDataURL('image/jpeg',0.78);
+            resolve(out);
+          };
+          img.onerror=reject;
+          img.src=r.result;
+        };
+        r.onerror=reject;
+        r.readAsDataURL(file);
+      });
+    };
+    try{compressImage=window.compressImage}catch(e){}
+  }
+
+  function bindParticipantCommit(){
+    const btn=document.getElementById('btn-save-competitor');
+    if(!btn||btn.dataset.tkfV139==='1')return;
+    btn.dataset.tkfV139='1';
+    btn.addEventListener('click',()=>{
+      setTimeout(()=>{
+        const modal=document.getElementById('competitor-modal');
+        // Se fechou, o cadastro passou pelas validações e foi incluído na tabela.
+        if(modal && modal.style.display==='none'){
+          try{typeof atualizarCalculos==='function'&&atualizarCalculos(true)}catch(e){}
+          const ok=persistState(true);
+          try{typeof updateCategoryUI==='function'&&updateCategoryUI()}catch(e){}
+          try{typeof atualizarCalculos==='function'&&atualizarCalculos(true)}catch(e){}
+          if(ok){
+            setTimeout(()=>{try{window.tkfSendCloudNow?.()}catch(e){}},120);
+          }
+        }
+      },0);
+    });
+  }
+
+  function migrate(){
+    if(localStorage.getItem(MIGRATION_KEY)==='1')return;
+    compactExistingBackups();
+    try{localStorage.setItem(MIGRATION_KEY,'1')}catch(e){}
+  }
+
+  function install(){
+    migrate();
+    installPhotoCompression();
+    installLightAutoBackup();
+    installRobustSaver();
+    bindParticipantCommit();
+
+    // Alguns scripts antigos instalam wrappers no DOMContentLoaded; reafirma a versão robusta depois.
+    setTimeout(()=>{
+      installPhotoCompression();
+      installLightAutoBackup();
+      installRobustSaver();
+      bindParticipantCommit();
+    },1200);
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);
+  else install();
 })();
 </script>
 
