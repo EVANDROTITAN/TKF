@@ -5546,7 +5546,7 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
         const profile=typeof rowProfile==='function'?rowProfile(row):{nome:row.querySelector('.input-name')?.value||''};
         return {...profile,peixes:[...row.querySelectorAll('.input-peixe')].map(i=>i.value)};
       });
-      const next={...prev,version:'13.7',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
+      const next={...prev,version:'13.8',titulo:(document.getElementById('titulo-torneio')?.innerText||prev.titulo||'').trim(),qtd:typeof qtdPeixesAtual!=='undefined'?qtdPeixesAtual:(prev.qtd||5),limite:typeof getLimite==='function'?getLimite():(prev.limite||300),tieBreak:document.getElementById('tie-break')?.value||prev.tieBreak||'maior',competidores:comps};
       localStorage.setItem(storeKey(),JSON.stringify(next));
       try{atualizarEstadoSalvo?.()}catch(e){}
       try{scheduleSend?.()}catch(e){}
@@ -6194,6 +6194,137 @@ window.addEventListener('load',()=>setTimeout(safeApplyPublicView,50));
     document.addEventListener('DOMContentLoaded',bindTopAddParticipant);
   }else{
     bindTopAddParticipant();
+  }
+})();
+</script>
+
+
+<script>
+/* ===== v13.8 • ZERAR TORNEIO • LOCAL + FIREBASE ===== */
+(function(){
+  const RESET_VERSION='13.8';
+
+  function stateKey(){
+    try{
+      return (typeof STORAGE_KEY!=='undefined' && STORAGE_KEY) ? STORAGE_KEY : 'pescaUltra2025_tablet';
+    }catch(e){
+      return 'pescaUltra2025_tablet';
+    }
+  }
+
+  function readState(){
+    try{return JSON.parse(localStorage.getItem(stateKey())||'{}')||{}}
+    catch(e){return {}}
+  }
+
+  function clearTransientHighlights(){
+    try{localStorage.removeItem('tkf_cloud_highlight_meta_v132')}catch(e){}
+    try{sessionStorage.removeItem('tkf_public_highlights_v13')}catch(e){}
+    try{sessionStorage.removeItem('tkf_highlight_baseline_v13')}catch(e){}
+    try{window.tkfAutoTickerHighlights=[]}catch(e){}
+  }
+
+  function releaseFinalLock(){
+    try{document.getElementById('tkf-final-admin-banner')?.remove()}catch(e){}
+    try{document.body.classList.remove('public-finished')}catch(e){}
+    document.querySelectorAll(
+      '.input-name,.input-peixe,#num-peixes,#limite,.del-btn,#btn-add,#btn-add-top,#btn-reset-limite'
+    ).forEach(el=>{
+      if(el.dataset.tkfFinalForced==='1'){
+        el.disabled=false;
+        delete el.dataset.tkfFinalForced;
+      }
+    });
+    const title=document.getElementById('titulo-torneio');
+    if(title) title.contentEditable='true';
+  }
+
+  function resetTournament(ev){
+    if(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+    }
+
+    const title=(document.getElementById('titulo-torneio')?.innerText||'este torneio').trim();
+
+    const ok=confirm(
+      `Zerar "${title}"?\n\n`+
+      `Isso vai apagar TODOS os participantes, medidas, pódio e destaques do ranking `+
+      `deste aparelho E da nuvem.\n\n`+
+      `As configurações do torneio, tema e login serão mantidas.`
+    );
+    if(!ok) return;
+
+    try{window.tkfAutoBackup?.('Antes de zerar torneio')}catch(e){}
+    try{typeof pushUndoSnapshot==='function' && pushUndoSnapshot()}catch(e){}
+
+    const prev=readState();
+    const blank={
+      ...prev,
+      version:RESET_VERSION,
+      torneioStatus:'nao_iniciado',
+      competidores:[],
+      tkfLiveHighlights:[]
+    };
+
+    clearTransientHighlights();
+    releaseFinalLock();
+
+    // Usa setItem para o autosync detectar o reset.
+    localStorage.setItem(stateKey(),JSON.stringify(blank));
+
+    try{
+      if(typeof carregarDoStorage==='function') carregarDoStorage();
+    }catch(err){
+      console.error('TKF reset carregarDoStorage:',err);
+    }
+
+    // O carregamento padrão deixa uma linha limpa. Salva e sincroniza esse estado.
+    try{
+      if(typeof salvarTudo==='function') salvarTudo();
+    }catch(err){
+      console.error('TKF reset salvarTudo:',err);
+    }
+
+    try{
+      const search=document.getElementById('search');
+      if(search) search.value='';
+      const cat=document.getElementById('category-filter');
+      if(cat){
+        cat.value='all';
+        cat.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+    }catch(e){}
+
+    // Envio explícito ao Firebase, além do autosync.
+    setTimeout(()=>{
+      try{
+        const send=document.getElementById('firebase-send-btn');
+        if(send && !send.disabled) send.click();
+      }catch(e){}
+    },180);
+
+    try{typeof closeMinimalMenu==='function' && closeMinimalMenu()}catch(e){}
+
+    setTimeout(()=>{
+      try{if(typeof toast==='function') toast('Torneio zerado e sincronizado.')}catch(e){}
+    },250);
+  }
+
+  function install(){
+    const btn=document.getElementById('btn-clear');
+    if(!btn || btn.dataset.tkfReset138==='1') return;
+    btn.dataset.tkfReset138='1';
+
+    // Capture=true faz esta correção rodar antes do reset antigo.
+    btn.addEventListener('click',resetTournament,true);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',install);
+  }else{
+    install();
   }
 })();
 </script>
